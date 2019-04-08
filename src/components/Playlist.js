@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Button } from 'semantic-ui-react'
+import {Grid, Button, Modal} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import firebase from "./firebase/Firebase";
 
@@ -38,7 +38,14 @@ class Playlist extends Component {
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
-                        <Button circular color='red' size='big' icon='add' />
+                        <Modal trigger={ <Button circular color='red' size='big' icon='add' />}>
+                            <Modal.Header>Search for a song to add</Modal.Header>
+                            <Modal.Content image>
+                                <Modal.Description>
+                                    <p>search here</p>
+                                </Modal.Description>
+                            </Modal.Content>
+                        </Modal>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>;
