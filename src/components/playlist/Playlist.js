@@ -33,12 +33,11 @@ class Playlist extends Component {
         return <Grid className="App" columns={1}>
                 <Grid.Row>
                     <Grid.Column>
-                        <h2>Playlist</h2>
                         <Table basic='very'>
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.HeaderCell>Song</Table.HeaderCell>
-                                    <Table.HeaderCell>Vote</Table.HeaderCell>
+                                    <Table.HeaderCell></Table.HeaderCell>
+                                    <Table.HeaderCell></Table.HeaderCell>
                                 </Table.Row>
                             </Table.Header>
 

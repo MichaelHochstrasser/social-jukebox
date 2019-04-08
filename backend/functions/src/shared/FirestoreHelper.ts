@@ -1,5 +1,4 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import admin from "./admin";
 
 import {
   Firestore,
@@ -8,8 +7,6 @@ import {
   WriteResult,
   DocumentSnapshot
 } from "@google-cloud/firestore";
-
-admin.initializeApp(functions.config().firebase);
 
 import { Event } from "../model/Event";
 import { Song } from "../model/Song";
@@ -61,10 +58,13 @@ export class FireStoreHelper {
     return docRef
       .get()
       .then((result: DocumentSnapshot) => {
-        return {
-          ...result.data(),
-          eventId: result.id
-        } as Event;
+        if (result.exists) {
+          return {
+            ...result.data(),
+            eventId: result.id
+          } as Event;
+        }
+        return;
       })
       .catch(err => {
         console.log(err);
@@ -111,10 +111,13 @@ export class FireStoreHelper {
     return docRef
       .get()
       .then((result: DocumentSnapshot) => {
-        return {
-          ...result.data(),
-          songId: result.id
-        } as Song;
+        if (result.exists) {
+          return {
+            ...result.data(),
+            songId: result.id
+          } as Song;
+        }
+        return;
       })
       .catch(err => {
         console.log(err);
