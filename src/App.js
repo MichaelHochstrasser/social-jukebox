@@ -11,10 +11,10 @@ class App extends Component {
 
   render() {
     return (
-        <Grid className="App" columns={1}>
+        <div>
             <HostNewEvent />
             <Playlist/>
-        </Grid>
+        </div>
     );
   }
 }
