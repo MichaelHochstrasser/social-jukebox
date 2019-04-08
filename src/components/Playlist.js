@@ -33,12 +33,7 @@ class Playlist extends Component {
         return <Grid className="App" columns={1}>
                 <Grid.Row>
                     <Grid.Column>
-                        Player
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <p>Playlist</p>
+                        <h2>Playlist</h2>
                         {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song}></PlaylistItem>)}
                     </Grid.Column>
                 </Grid.Row>
