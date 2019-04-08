@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
-import {Playheader} from "./components/playlist/Playheader";
 import {PlaySite} from "./components/playlist/PlaySite";
 import {Menu} from "./components/menu/Menu";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import {Home} from "./components/home/Home";
 
 class App extends Component {
