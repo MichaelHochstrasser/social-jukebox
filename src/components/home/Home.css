@@ -16,6 +16,11 @@
 }
 
 .home-button {
+    height: 75px;
     width: 50%;
     margin: 0 auto;
+}
+
+.home-button-text {
+    font-size: 50px;
 }

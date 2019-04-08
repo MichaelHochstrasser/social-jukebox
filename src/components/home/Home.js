@@ -34,8 +34,8 @@ export class Home extends Component {
             <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
             {this.renderRedirect()}
             <div className="button-container">
-            <button class="home-button positive ui button" onClick={this.onCreateEvent}>Create event</button>
-            <button class="home-button positive ui button" onClick={this.onSearch}>Search & Join event</button>
+                <button class="home-button positive ui button" onClick={this.onCreateEvent}><span className="home-button-text">Create event</span></button>
+            <button class="home-button positive ui button" onClick={this.onSearch}><span className="home-button-text">Search & Join event</span></button>
             </div>
         </div>
     }
