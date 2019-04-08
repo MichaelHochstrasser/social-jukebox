@@ -7,7 +7,7 @@ class PlaylistItem extends Component {
             <Grid columns={3}>
                 <Grid.Row>
                     <Grid.Column>
-                        <img href="" />
+                        <img src={process.env.PUBLIC_URL + '/images/song2.jpg'} width="80dp" height="80dp"/>
                     </Grid.Column>
                     <Grid.Column>
                         <p>{this.props.songtitle}</p>
