@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Grid, Button, Modal} from 'semantic-ui-react'
+import {Grid, Button, Modal, Table, Image, Header, Icon} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import firebase from "../firebase/Firebase";
 import {SearchSongs} from "../SearchSongs";
@@ -34,7 +34,18 @@ class Playlist extends Component {
                 <Grid.Row>
                     <Grid.Column>
                         <h2>Playlist</h2>
-                        {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song}></PlaylistItem>)}
+                        <Table basic='very'>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Song</Table.HeaderCell>
+                                    <Table.HeaderCell>Vote</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+
+                            <Table.Body>
+                                {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song} artist={'Artist'}></PlaylistItem>)}
+                            </Table.Body>
+                        </Table>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>

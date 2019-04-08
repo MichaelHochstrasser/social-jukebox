@@ -4,6 +4,7 @@ import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
 import Playlist from './components/playlist/Playlist'
 import Container from "semantic-ui-react/dist/es/elements/Container/Container";
+import {Playheader} from "./components/playheader/Playheader";
 
 class App extends Component {
 
@@ -11,6 +12,7 @@ class App extends Component {
     return (
         <div>
             <Container>
+                <Playheader />
                 <HostNewEvent />
                 <EventInvitation eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" />
 
