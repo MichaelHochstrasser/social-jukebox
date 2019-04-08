@@ -3,14 +3,17 @@ import './App.css';
 import HostNewEvent from './components/host/HostNewEvent'
 import { Grid } from 'semantic-ui-react'
 import Playlist from './components/Playlist'
+import Container from "semantic-ui-react/dist/es/elements/Container/Container";
 
 class App extends Component {
 
   render() {
     return (
         <div>
-            <HostNewEvent />
-            <Playlist/>
+            <Container>
+                <HostNewEvent />
+                <Playlist/>
+            </Container>
         </div>
     );
   }

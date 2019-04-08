@@ -4,7 +4,7 @@ import { Grid, Button, Icon, Label, Segment } from 'semantic-ui-react'
 class PlaylistItem extends Component {
     render() {
         return <Segment>
-            <Grid columns={3} divided>
+            <Grid columns={3}>
                 <Grid.Row>
                     <Grid.Column>
                         <img href="" />
