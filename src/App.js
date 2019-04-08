@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
-import Playlist from './components/Playlist'
+import Playlist from './components/playlist/Playlist'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Container from "semantic-ui-react/dist/es/elements/Container/Container";
+import {Playheader} from "./components/playheader/Playheader";
 
 class App extends Component {
 
