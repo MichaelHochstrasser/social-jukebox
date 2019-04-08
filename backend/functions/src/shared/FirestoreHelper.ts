@@ -1,5 +1,4 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import admin from "./admin";
 
 import {
   Firestore,
@@ -8,8 +7,6 @@ import {
   WriteResult,
   DocumentSnapshot
 } from "@google-cloud/firestore";
-
-admin.initializeApp(functions.config().firebase);
 
 import { Event } from "../model/Event";
 import { Song } from "../model/Song";
