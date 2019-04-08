@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import HostNewEvent from './components/host/HostNewEvent'
 import Startpage from './components/Startpage'
 import PlaylistItem from './components/PlaylistItem'
 
@@ -8,6 +8,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <HostNewEvent />
+
         <Startpage name="Lea" />
         <div className="ui container">
             <div className="ui segments">
