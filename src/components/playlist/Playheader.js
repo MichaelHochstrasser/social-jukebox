@@ -19,14 +19,14 @@ export class Playheader extends Component {
                 <Grid.Row>
                     <Container textAlign='center'>
                         <h2>{this.state.currentSong.title}</h2>
-                        <p>Britney Spears</p>
+                        <p>{this.state.currentSong.artist}</p>
                         <Icon name='play' />
                     </Container>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
                         <Progress percent={10} size='tiny'>
-                            4:30
+                            {this.state.currentSong.time}
                         </Progress>
                     </Grid.Column>
                 </Grid.Row>
