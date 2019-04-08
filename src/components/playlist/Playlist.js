@@ -33,7 +33,7 @@ class Playlist extends Component {
         return <Grid className="App" columns={1}>
                 <Grid.Row>
                     <Grid.Column>
-                        <Table basic='very'>
+                        <Table basic='very' unstackable>
                             <Table.Header>
                                 <Table.Row>
                                     <Table.HeaderCell></Table.HeaderCell>
