@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
-import Playlist from './components/Playlist'
+import Playlist from './components/playlist/Playlist'
 import Container from "semantic-ui-react/dist/es/elements/Container/Container";
 
 class App extends Component {

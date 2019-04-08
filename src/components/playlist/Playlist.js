@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {Grid, Button, Modal} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
-import firebase from "./firebase/Firebase";
-import {SearchSongs} from "./SearchSongs";
+import firebase from "../firebase/Firebase";
+import {SearchSongs} from "../SearchSongs";
 
 class Playlist extends Component {
     constructor(props) {
