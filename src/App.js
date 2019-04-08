@@ -14,9 +14,9 @@ class App extends Component {
                 <div className="ui segment">Player</div>
                 <div className="ui segment">
                   <p>Playlist</p>
-                  <PlaylistItem songtitle="Lady Gaga"/>
-                  <PlaylistItem songtitle="Züri West"/>
-                  <PlaylistItem songtitle="The Killers"/>
+                  <PlaylistItem songtitle="Lady Gaga" votes="12"/>
+                  <PlaylistItem songtitle="Züri West" votes="11"/>
+                  <PlaylistItem songtitle="The Killers" votes="10"/>
                 </div>
                 <div className="ui segment">Add</div>
             </div>

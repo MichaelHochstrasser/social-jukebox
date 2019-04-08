@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'semantic-ui-react'
+import { Button, Icon, Label } from 'semantic-ui-react'
 
 class PlaylistItem extends Component {
     render() {
@@ -10,11 +10,15 @@ class PlaylistItem extends Component {
                         <p>{this.props.songtitle}</p>
                     </div>
                     <div className="right floated six column">
-                        <Button.Group>
-                            <Button positive>Upvote</Button>
-                            <Button.Or>5</Button.Or>
-                            <Button negative>Downvote</Button>
-                        </Button.Group>
+                        <Button as='div' labelPosition='left'>
+                            <Label as='a' basic color='green' pointing='right'>
+                                {this.props.votes}
+                            </Label>
+                            <Button color='green'>
+                                <Icon name='heart' />
+                                Like
+                            </Button>
+                        </Button>
                     </div>
                 </div>
             </div>
