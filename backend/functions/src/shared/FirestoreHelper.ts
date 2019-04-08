@@ -43,7 +43,17 @@ export class FireStoreHelper {
       });
   }
 
-  deleteEvent(eventId: string) {}
+  deleteEvent(eventId: string): Promise<boolean> {
+    const docRef: DocumentReference = this.getEventDocument(eventId);
+
+    return docRef
+      .delete()
+      .then((result: WriteResult) => true)
+      .catch(err => {
+        console.log(err);
+        return false;
+      });
+  }
 
   getEvent(eventId: string): Promise<Event | void> {
     const docRef: DocumentReference = this.getEventDocument(eventId);
@@ -61,11 +71,53 @@ export class FireStoreHelper {
       });
   }
 
-  addSong(song: Song) {}
+  private getSongDocument(songId?: string): DocumentReference {
+    const collection: CollectionReference = this.firestore.collection("Songs");
 
-  updateSong(song: Song) {}
+    return songId ? collection.doc(songId) : collection.doc();
+  }
 
-  removeSong(songId: string) {}
+  addOrUpdateSong(song: Song): Promise<Song | void> {
+    const docRef: DocumentReference = this.getSongDocument(song.songId);
 
-  getSong(songId: string) {}
+    return docRef
+      .set({ ...song })
+      .then((result: WriteResult) => {
+        return {
+          ...song,
+          songId: docRef.id
+        } as Song;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  removeSong(songId: string) {
+    const docRef: DocumentReference = this.getSongDocument(songId);
+
+    return docRef
+      .delete()
+      .then((result: WriteResult) => true)
+      .catch(err => {
+        console.log(err);
+        return false;
+      });
+  }
+
+  getSong(songId: string) {
+    const docRef: DocumentReference = this.getSongDocument(songId);
+
+    return docRef
+      .get()
+      .then((result: DocumentSnapshot) => {
+        return {
+          ...result.data(),
+          songId: result.id
+        } as Song;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 }
