@@ -6,22 +6,18 @@ class PlaylistItem extends Component {
         return <Segment>
             <Grid columns={3}>
                 <Grid.Row>
-                    <Grid.Column>
+                    <Grid.Column class='four wide column'>
                         <img src={process.env.PUBLIC_URL + '/images/song2.jpg'} width="80dp" height="80dp"/>
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column class='eight wide column'>
                         <p>{this.props.songtitle}</p>
                     </Grid.Column>
-                    <Grid.Column>
-                        <Button as='div' labelPosition='left'>
-                            <Label as='a' basic color='green' pointing='right'>
-                                {this.props.votes}
-                            </Label>
-                            <Button basic color='green'>
-                                <Icon name='heart' />
-                                Like
-                            </Button>
-                        </Button>
+                    <Grid.Column class='two wide column'>
+                        <Button.Group size='small'>
+                            <Button icon color='red'><Icon name='thumbs down outline' /></Button>
+                            <Button basic color='grey'>{this.props.votes}</Button>
+                            <Button icon color='green'><Icon name='thumbs up outline' /></Button>
+                        </Button.Group>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
