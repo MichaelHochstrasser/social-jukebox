@@ -16,11 +16,12 @@ class Playlist extends Component {
     onUpdate = (querySnapshot) => {
         const songs = [];
         querySnapshot.forEach((doc) => {
-            const { song, votes } = doc.data();
+            const { song, votes, artist } = doc.data();
             songs.push({
                 key: doc.id,
                 song: song,
-                votes: votes
+                votes: votes,
+                artist: artist
             });
         });
         this.setState({songs});
@@ -42,7 +43,7 @@ class Playlist extends Component {
                             </Table.Header>
 
                             <Table.Body>
-                                {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song} artist={'Artist'}></PlaylistItem>)}
+                                {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song} artist={song.artist}></PlaylistItem>)}
                             </Table.Body>
                         </Table>
                     </Grid.Column>
