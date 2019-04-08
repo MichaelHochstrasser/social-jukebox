@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Container from "semantic-ui-react/dist/es/elements/Container/Container";
 import {Playheader} from "./components/playlist/Playheader";
 import {PlaySite} from "./components/playlist/PlaySite";
+import {Menu} from "./components/menu/Menu";
 
 class App extends Component {
 
@@ -15,12 +16,7 @@ class App extends Component {
 
         <div>
           <Router>
-            <ul>
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/host">Host Event</Link></li>
-              <li><Link to="/host/event">Invite To Event</Link></li>
-              <li><Link to="/event">Go To Event</Link></li>
-            </ul>
+            <Menu/>
 
             <Route exact path="/" component={HostNewEvent} />
             <Route exact path="/host" component={HostNewEvent} />
