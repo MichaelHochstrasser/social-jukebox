@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Grid, Button, Modal} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import firebase from "./firebase/Firebase";
+import {SearchSongs} from "./SearchSongs";
 
 class Playlist extends Component {
     constructor(props) {
@@ -32,12 +33,7 @@ class Playlist extends Component {
         return <Grid className="App" columns={1}>
                 <Grid.Row>
                     <Grid.Column>
-                        Player
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <p>Playlist</p>
+                        <h2>Playlist</h2>
                         {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song}></PlaylistItem>)}
                     </Grid.Column>
                 </Grid.Row>
@@ -47,7 +43,7 @@ class Playlist extends Component {
                             <Modal.Header>Search for a song to add</Modal.Header>
                             <Modal.Content image>
                                 <Modal.Description>
-                                    <p>search here</p>
+                                    <SearchSongs/>
                                 </Modal.Description>
                             </Modal.Content>
                         </Modal>

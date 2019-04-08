@@ -3,17 +3,20 @@ import './App.css';
 import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
 import Playlist from './components/Playlist'
+import Container from "semantic-ui-react/dist/es/elements/Container/Container";
 
 class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <HostNewEvent />
-        <EventInvitation eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" />
+        <div>
+            <Container>
+                <HostNewEvent />
+                <EventInvitation eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" />
 
-        <Playlist/>
-      </div>
+                <Playlist/>
+            </Container>
+        </div>
     );
   }
 }
