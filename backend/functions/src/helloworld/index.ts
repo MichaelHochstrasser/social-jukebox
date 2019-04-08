@@ -1,22 +1,17 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 
-admin.initializeApp(functions.config().firebase);
+import { FireStoreHelper } from "../shared/FirestoreHelper";
+import { Event } from "../model/Event";
+
+const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
-  const db = admin.firestore();
-
-  db.collection("test")
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        //console.log(doc.id, '=>', doc.data());
-        response.send(`${doc.id}: ${doc.data()}`);
-      });
+  firestoreHelper
+    .getEvent("lfBoWpMRpm19kDTZp7P1")
+    .then((result: Event | void) => {
+      response.send(result ? result.name : "nope");
     })
     .catch(err => {
-      console.log("Error getting documents", err);
+      response.send("Error");
     });
-  console.log("here");
-  //response.send("Hello from Firebase!");
 });
