@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Grid, Button, Modal} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import firebase from "./firebase/Firebase";
+import {SearchSongs} from "./SearchSongs";
 
 class Playlist extends Component {
     constructor(props) {
@@ -42,7 +43,7 @@ class Playlist extends Component {
                             <Modal.Header>Search for a song to add</Modal.Header>
                             <Modal.Content image>
                                 <Modal.Description>
-                                    <p>search here</p>
+                                    <SearchSongs/>
                                 </Modal.Description>
                             </Modal.Content>
                         </Modal>
