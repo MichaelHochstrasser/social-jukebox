@@ -1,8 +1,33 @@
 import React, { Component } from 'react';
 import { Grid, Button } from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
+import firebase from "./firebase/Firebase";
 
 class Playlist extends Component {
+    constructor(props) {
+        super(props);
+        this.db = firebase.firestore().collection('test');
+        this.state = {
+            songs: []
+        };
+    }
+
+    onUpdate = (querySnapshot) => {
+        const songs = [];
+        querySnapshot.forEach((doc) => {
+            const { song, votes } = doc.data();
+            songs.push({
+                key: doc.id,
+                song: song,
+                votes: votes
+            });
+        });
+        this.setState({songs});
+    };
+
+    componentDidMount() {
+        this.db.onSnapshot(this.onUpdate);
+    }
     render() {
         return <Grid className="App" columns={1}>
                 <Grid.Row>
@@ -13,9 +38,7 @@ class Playlist extends Component {
                 <Grid.Row>
                     <Grid.Column>
                         <p>Playlist</p>
-                        <PlaylistItem songtitle="Lady Gaga" votes="12"/>
-                        <PlaylistItem songtitle="Züri West" votes="11"/>
-                        <PlaylistItem songtitle="The Killers" votes="10"/>
+                        {this.state.songs.map(song => <PlaylistItem key={song.key} votes={song.votes} songtitle={song.song}></PlaylistItem>)}
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
