@@ -4,8 +4,7 @@ import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
 import Playlist from './components/playlist/Playlist'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import Container from "semantic-ui-react/dist/es/elements/Container/Container";
-import {Playheader} from "./components/playheader/Playheader";
+import {Home} from "./components/home/Home";
 
 class App extends Component {
 
@@ -21,7 +20,7 @@ class App extends Component {
               <li><Link to="/event">Go To Event</Link></li>
             </ul>
 
-            <Route exact path="/" component={HostNewEvent} />
+            <Route exact path="/" component={Home} />
             <Route exact path="/host" component={HostNewEvent} />
             <Route exact path="/host/event" render={ (props) => <EventInvitation {...props} eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" /> } />
             <Route path="/event" component={Playlist} />
