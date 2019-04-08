@@ -13,7 +13,7 @@ export default functions.https.onRequest((request, response) => {
         return;
     }
 
-    return firestoreHelper.createOrUpdateEvent(new Event(request.body[nameAttribute], "", ""))
+    return firestoreHelper.createOrUpdateEvent(new Event(request.body[nameAttribute]))
         .then(() => response.status(200).send())
         .catch((msg) => response.status(500).send(msg));
 });
