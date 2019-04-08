@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
 import Startpage from './components/Startpage'
 import PlaylistItem from './components/PlaylistItem'
@@ -9,6 +10,7 @@ class App extends Component {
     return (
       <div className="App">
         <HostNewEvent />
+        <EventInvitation eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" />
 
         <Startpage name="Lea" />
         <div className="ui container">
