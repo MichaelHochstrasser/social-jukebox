@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {Redirect} from "react-router-dom";
+import {Image} from "semantic-ui-react";
+import './Home.css'
 
 export class Home extends Component {
     state = {
@@ -28,9 +30,13 @@ export class Home extends Component {
 
     render() {
         return <div>
+            <h1 className="title">Social Jukebox</h1>
+            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
             {this.renderRedirect()}
-            <button onClick={this.onCreateEvent}>Create event</button>
-            <button onClick={this.onSearch}>Search & Join event</button>
+            <div className="button-container">
+                <button class="home-button positive ui button" onClick={this.onCreateEvent}><span className="home-button-text">Create event</span></button>
+            <button class="home-button positive ui button" onClick={this.onSearch}><span className="home-button-text">Search & Join event</span></button>
+            </div>
         </div>
     }
 }
