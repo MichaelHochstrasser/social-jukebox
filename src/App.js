@@ -3,9 +3,9 @@ import './App.css';
 import EventInvitation from './components/host/EventInvitation'
 import HostNewEvent from './components/host/HostNewEvent'
 import {PlaySite} from "./components/playlist/PlaySite";
-import {Menu} from "./components/menu/Menu";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import {Home} from "./components/home/Home";
+import {MenuBasic} from "./components/menu/MenuBasic";
 
 class App extends Component {
 
@@ -14,7 +14,7 @@ class App extends Component {
 
         <div>
           <Router>
-            <Menu/>
+            <MenuBasic/>
 
             <Route exact path="/" component={Home} />
             <Route exact path="/host" component={HostNewEvent} />
