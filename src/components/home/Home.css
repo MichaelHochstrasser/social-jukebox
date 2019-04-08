@@ -1,0 +1,19 @@
+.title {
+    text-align: center;
+}
+
+.title-image {
+    width: 100%;
+}
+
+.button-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-button {
+    width: 50%;
+    margin: 0 auto;
+}
