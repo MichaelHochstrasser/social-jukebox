@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "qrcode-react": "^0.1.16",
     "@react-firebase/firestore": "^0.5.2",
     "firebase": "^5.9.3",
     "react": "^16.8.6",

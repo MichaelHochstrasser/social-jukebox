@@ -1,28 +1,31 @@
 import React, { Component } from 'react';
-import { Button, Icon, Label } from 'semantic-ui-react'
+import { Grid, Button, Icon, Label, Segment } from 'semantic-ui-react'
 
 class PlaylistItem extends Component {
     render() {
-        return <div class="ui container">
-            <div class="ui grid">
-                <div class="row">
-                    <div class="column">
+        return <Segment>
+            <Grid columns={3} divided>
+                <Grid.Row>
+                    <Grid.Column>
+                        <img href="" />
+                    </Grid.Column>
+                    <Grid.Column>
                         <p>{this.props.songtitle}</p>
-                    </div>
-                    <div className="right floated six column">
+                    </Grid.Column>
+                    <Grid.Column>
                         <Button as='div' labelPosition='left'>
                             <Label as='a' basic color='green' pointing='right'>
                                 {this.props.votes}
                             </Label>
-                            <Button color='green'>
+                            <Button basic color='green'>
                                 <Icon name='heart' />
                                 Like
                             </Button>
                         </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </Segment>
     }
 }
 

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import HostNewEvent from './components/host/HostNewEvent'
 import Startpage from './components/Startpage'
 import PlaylistItem from './components/PlaylistItem'
 import firebase from "./components/firebase/Firebase";
+import { Grid, Button } from 'semantic-ui-react'
 
 class App extends Component {
     constructor(props) {
@@ -31,19 +33,27 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <Startpage name="Lea" />
-        <div className="ui container">
-            <div className="ui segments">
-                <div className="ui segment">Player</div>
-                <div className="ui segment">
-                  <p>Playlist</p>
-                    {this.state.songs.map(song => <PlaylistItem key={song.key} votes="11" songtitle={song.song}></PlaylistItem>)}
-                </div>
-                <div className="ui segment">Add</div>
-            </div>
-        </div>
-      </div>
+        <Grid className="App" columns={1}>
+            <HostNewEvent />
+            <Grid.Row>
+                <Grid.Column>
+                    Player
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column>
+                    <p>Playlist</p>
+                    <PlaylistItem songtitle="Lady Gaga" votes="12"/>
+                    <PlaylistItem songtitle="Züri West" votes="11"/>
+                    <PlaylistItem songtitle="The Killers" votes="10"/>
+                </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+                <Grid.Column>
+                    <Button circular color='red' size='big' icon='add' />
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
     );
   }
 }
