@@ -43,14 +43,14 @@ export class SpotifyHelper {
         .then((response: any) => {
           if (response.data) {
             return {
-              id: response.data.id,
-              name: response.data.name,
-              duration_ms: response.data.duration_ms,
+              id: response.data.id as string,
+              title: response.data.name as string,
+              duration_ms: response.data.duration_ms as number,
               artist: response.data.artists
                 .map((artist: { name: string }) => artist.name)
-                .join(","),
-              popularity: response.data.popularity,
-              image: response.data.album.images[0].url
+                .join(",") as string,
+              popularity: response.data.popularity as number,
+              image: response.data.album.images[0].url as string
             } as SpotifyTrack;
           } else {
             throw new Error("No data returned!");
