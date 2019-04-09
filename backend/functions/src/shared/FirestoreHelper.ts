@@ -101,19 +101,44 @@ export class FireStoreHelper {
     return songId ? collection.doc(songId) : collection.doc();
   }
 
-  addOrUpdateSong(song: Song): Promise<Song | void> {
+  addOrUpdateSong(song: Song, spotifyToken?: string): Promise<Song | void> {
     const docRef: DocumentReference = this.getSongDocument(song.songId);
 
-    return docRef
-      .set({ ...song })
-      .then((result: WriteResult) => {
-        return {
-          ...song,
-          songId: docRef.id
-        } as Song;
+    return new Promise<void>((resolve, reject) => {
+      if (song && song.playlistId && spotifyToken) {
+        const spotifyHelper = new SpotifyHelper(spotifyToken);
+
+        spotifyHelper
+          .addSongToPlaylist(song.playlistId, song.songId)
+          .then(success => {
+            if (success) {
+              resolve();
+            } else {
+              reject(new Error("Could not add Song to Spotify Playlist!"));
+            }
+          })
+          .catch(err => {
+            throw err;
+          });
+      } else {
+        reject(new Error("Playlist ID or Spotifytoken not available!"));
+      }
+    })
+      .then(() => {
+        return docRef
+          .set({ ...song })
+          .then((result: WriteResult) => {
+            return {
+              ...song,
+              songId: docRef.id
+            } as Song;
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
-      .catch(err => {
-        console.log(err);
+      .catch(spotifyAddError => {
+        throw spotifyAddError;
       });
   }
 
