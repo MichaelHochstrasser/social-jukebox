@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import { checkParamsExist } from "../shared/propertychecker";
+import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { Event } from "../model/Event";
 
