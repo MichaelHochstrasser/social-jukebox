@@ -12,7 +12,7 @@ export class MenuBasic extends Component {
 
         return (
             <Menu icon='labeled'>
-                <Link to="/">
+                <Link to="/event">
                     <Menu.Item>
                         <Icon name='exchange' />
                         Change Event
