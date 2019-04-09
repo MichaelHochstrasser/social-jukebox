@@ -10,11 +10,19 @@ import {
 
 export function createHeader(
   token: string,
+  contentType?: string,
   params?: { [key: string]: string | number }
 ): AxiosRequestConfig {
   const options: AxiosRequestConfig = {
     headers: { Authorization: "Bearer " + token }
   };
+
+  if (contentType) {
+    options.headers = {
+      ...options.headers,
+      "content-type": contentType
+    };
+  }
 
   if (params) {
     options.params = params;
@@ -116,7 +124,7 @@ export class SpotifyHelper {
     if (this.spotifyToken) {
       return axios.get(
         "https://api.spotify.com/v1/search",
-        createHeader(this.spotifyToken, {
+        createHeader(this.spotifyToken, "", {
           q: searchTerm,
           type: searchType,
           market: "from_token"
