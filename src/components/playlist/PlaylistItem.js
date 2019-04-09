@@ -4,7 +4,7 @@ import { Grid, Button, Icon, Label, Segment, Table, Header, Image } from 'semant
 class PlaylistItem extends Component {
     render() {
         return <Table.Row>
-                <Table.Cell>
+                <Table.Cell One>
                     <Header as='h4' image>
                         <Image src={process.env.PUBLIC_URL + '/images/song2.jpg'} rounded size='mini' />
                         <Header.Content>
@@ -13,8 +13,8 @@ class PlaylistItem extends Component {
                         </Header.Content>
                     </Header>
                 </Table.Cell>
-                <Table.Cell>
-                    <Button.Group size='tiny'>
+                <Table.Cell textAlign='right'>
+                    <Button.Group size='mini'>
                         <Button icon color='red'><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
                         <Button icon color='green'><Icon name='thumbs up outline' /></Button>

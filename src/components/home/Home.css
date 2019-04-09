@@ -1,0 +1,26 @@
+.title {
+    text-align: center;
+    font-family: "Helvetica Neue", Helvetica;
+    font-size: 100px;
+}
+
+.title-image {
+    width: 100%;
+}
+
+.button-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-button {
+    height: 75px;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.home-button-text {
+    font-size: 50px;
+}
