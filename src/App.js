@@ -15,7 +15,6 @@ class App extends Component {
         <div>
           <Router>
             <MenuBasic/>
-
             <Route exact path="/" component={Home} />
             <Route exact path="/host" component={HostNewEvent} />
             <Route exact path="/host/event" render={ (props) => <EventInvitation {...props} eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" /> } />
