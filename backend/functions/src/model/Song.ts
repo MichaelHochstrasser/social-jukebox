@@ -11,7 +11,7 @@ export class Song implements SpotifyTrack {
     public eventId: string,
     public playlistId: string,
     public songId: string = "6rqhFgbbKwnb9MLmUQDhG6",
-    public name: string = "",
+    public title: string = "",
     public artist: string = "",
     public duration_ms: number = 0,
     public popularity: number = 0,
