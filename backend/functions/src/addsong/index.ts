@@ -41,7 +41,7 @@ export default functions.https.onRequest((request, response) => {
                     request.body[eventIdAttr],
                     "", // TODO: Set Playlist ID!
                     request.body[songIdAttr],
-                    result.name,
+                    result.title,
                     result.artist,
                     result.duration_ms,
                     result.popularity,

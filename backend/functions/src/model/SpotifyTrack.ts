@@ -1,6 +1,6 @@
 export interface SpotifyTrack {
     id: string;
-    name: string;
+    title: string;
     duration_ms: number;
     artist: string;
     popularity: number;
