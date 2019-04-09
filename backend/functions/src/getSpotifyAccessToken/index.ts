@@ -47,7 +47,8 @@ export default functions.https.onRequest((request, response) => {
     console.log("new refresh token: ", refreshToken);
     console.log(`expires in ${expiresIn} seconds`);
     const eventId = query["state"];
-    if (accessToken != null && accessToken.length == 178) {
+    console.log(accessToken);
+    if (accessToken && accessToken.length > 0) {
       console.log("got a new access token from spotify");
       console.log("add the accessToken to the event with id", query["state"]);
 
@@ -82,6 +83,8 @@ export default functions.https.onRequest((request, response) => {
         .catch((err: Error) => {
           response.status(500).send(err.message);
         });
+    } else {
+      response.status(500).send("Invalid access token.");
     }
   });
 });

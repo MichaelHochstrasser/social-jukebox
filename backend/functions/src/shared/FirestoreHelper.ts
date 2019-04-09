@@ -10,6 +10,7 @@ import {
 
 import { Event } from "../model/Event";
 import { Song } from "../model/Song";
+import { SpotifyHelper } from "./SpotifyApiHelper";
 
 export class FireStoreHelper {
   private firestore: Firestore;
@@ -27,16 +28,39 @@ export class FireStoreHelper {
   createOrUpdateEvent(event: Event): Promise<Event | void> {
     const docRef: DocumentReference = this.getEventDocument(event.eventId);
 
-    return docRef
-      .set({ ...event })
-      .then((result: WriteResult) => {
-        return {
-          ...event,
-          eventId: docRef.id
-        } as Event;
+    return new Promise<string>((resolve, reject) => {
+      if (event && event.playlistId) {
+        resolve(event.playlistId);
+      } else if (event.spotifyToken) {
+        const spotifyHelper = new SpotifyHelper(event.spotifyToken);
+
+        spotifyHelper
+          .createPlaylist(event.name)
+          .then(playlistId => {
+            resolve(playlistId);
+          })
+          .catch(err => {
+            throw err;
+          });
+      } else {
+        resolve("");
+      }
+    })
+      .then((playlistId: string) => {
+        return docRef
+          .set({ ...event, playlistId })
+          .then((result: WriteResult) => {
+            return {
+              ...event,
+              eventId: docRef.id
+            } as Event;
+          })
+          .catch(err => {
+            throw err;
+          });
       })
-      .catch(err => {
-        console.log(err);
+      .catch(playListErr => {
+        throw playListErr;
       });
   }
 
