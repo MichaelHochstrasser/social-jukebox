@@ -115,10 +115,10 @@ export class FireStoreHelper {
     const docRef: DocumentReference = this.getSongDocument(song.songId);
 
     return new Promise<void>((resolve, reject) => {
-      if (song && song.id) {
+      if (song && song.songId) {
         // If the song is not new, we don't need to add it to the playlist.
         resolve();
-      } else if (song && !song.id && song.playlistId && spotifyToken) {
+      } else if (song && !song.songId && song.playlistId && spotifyToken) {
         const spotifyHelper = new SpotifyHelper(spotifyToken);
 
         spotifyHelper
