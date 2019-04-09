@@ -42,6 +42,10 @@ export default functions.https.onRequest((request, response) => {
     console.log("try to get a new access token from spotify");
     const jsonBody = JSON.parse(body);
     const accessToken = jsonBody["access_token"];
+    const refreshToken = jsonBody["refresh_token"];
+    const expiresIn = jsonBody["expires_in"];
+    console.log("new refresh token: ", refreshToken);
+    console.log(`expires in ${expiresIn} seconds`);
     const eventId = query["state"];
     console.log(accessToken);
     if (accessToken && accessToken.length > 0) {
