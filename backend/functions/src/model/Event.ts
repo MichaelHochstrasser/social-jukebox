@@ -1,7 +1,6 @@
 export class Event {
   eventId?: string;
   spotifyToken?: string;
-  playlistId?: string;
 
   constructor(
     public name: string,
@@ -14,9 +13,6 @@ export class Event {
     }
     if (spotifyToken) {
       this.spotifyToken = spotifyToken;
-    }
-    if (playlistId) {
-      this.playlistId = playlistId;
     }
   }
 }

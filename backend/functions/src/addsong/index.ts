@@ -39,6 +39,7 @@ export default functions.https.onRequest((request, response) => {
                 .addOrUpdateSong(
                   new Song(
                     request.body[eventIdAttr],
+                    "", // TODO: Set Playlist ID!
                     request.body[songIdAttr],
                     result.name,
                     result.artist,

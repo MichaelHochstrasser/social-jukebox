@@ -93,12 +93,19 @@ export class SpotifyHelper {
 
           if (this.spotifyToken) {
             return axios
-              .post(playlistRequestUrl, {}, createHeader(this.spotifyToken)) // TODO: Content-Type, etc...
+              .post(
+                playlistRequestUrl,
+                {
+                  name,
+                  public: true
+                },
+                createHeader(this.spotifyToken, "application/json")
+              )
               .then((response: any) => {
-                if (response.data) {
-                  return response.data.id; // TODO: Return the playlist-id
+                if (response.data && response.data.id) {
+                  return response.data.id;
                 } else {
-                  throw new Error("No data returned!");
+                  throw new Error("Failed to create Playlist!");
                 }
               })
               .catch(err => {
