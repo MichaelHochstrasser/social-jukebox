@@ -10,3 +10,23 @@
 .song-title {
     font-weight: bold;
 }
+
+.song-duration {
+    font-style: italic;
+}
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.center-content {
+    flex:1 1 auto;
+}
+.left-content,
+.right-content {
+    flex:0 0 auto;
+    margin-left: 10px;
+    margin-right: 10px;
+}

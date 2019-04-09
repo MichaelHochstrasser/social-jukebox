@@ -8,12 +8,21 @@ import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 
 import { Song } from "../model/Song";
 import { Event } from "../model/Event";
+import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import { HTTP_METHODS } from "../model/CorsConfig";
 
 const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
   const songIdAttr = "songId";
   const eventIdAttr = "eventId";
+
+  if (request.method === "OPTIONS") {
+    corsEnabledFunctionAuth(request, response, {
+      methods: [HTTP_METHODS.POST]
+    });
+    return;
+  }
 
   if (
     request.method !== "POST" ||
@@ -41,7 +50,7 @@ export default functions.https.onRequest((request, response) => {
                     request.body[eventIdAttr],
                     "", // TODO: Set Playlist ID!
                     request.body[songIdAttr],
-                    result.name,
+                    result.title,
                     result.artist,
                     result.duration_ms,
                     result.popularity,

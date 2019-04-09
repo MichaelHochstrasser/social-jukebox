@@ -6,7 +6,7 @@ import {SearchSongs} from "../search/SearchSongs";
 export default (props) => {
     let playlistItems = props.songs.length > 0
         ? props.songs.map(song => <PlaylistItem key={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
-        : <Header as='h2'>Duuude, what a lame party… Add some songs!</Header>;
+        : <Table.Row key={'emptyList'}><Table.Cell><Header as='h2'>Duuude, what a lame party… Add some songs!</Header></Table.Cell></Table.Row>;
 
     return <Grid className="App" columns={1}>
             <Grid.Row>
@@ -15,7 +15,7 @@ export default (props) => {
                         <Modal.Header>Search for a song to add</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
-                                <SearchSongs/>
+                                <SearchSongs closeModal={props.closeModal}/>
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>

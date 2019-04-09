@@ -1,8 +1,6 @@
-import firebase from "../firebase/Firebase";
 import React, {Component} from 'react';
 import {Link, Redirect} from "react-router-dom";
-import PlaylistItem from "../playlist/Playlist";
-import {Header} from "semantic-ui-react";
+import {Button, Container, Grid, Header, Input} from "semantic-ui-react";
 import {Image} from "semantic-ui-react";
 import './Home.css';
 
@@ -10,37 +8,31 @@ export class Home extends Component {
 
     constructor(props) {
         super(props);
-
-        this.db = firebase.firestore().collection('Events');
+        this.state = {
+            redirect: false,
+            eventName: ''
+        };
     }
 
-    state = {
-        redirect: false,
-        events: []
-    }
+    createEvent() {
+        const axios = require('axios');
 
-    componentDidMount() {
-        this.db.onSnapshot(this.onUpdate )
-    }
+        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
+        const body = {
+            name: this.state.eventName,
+        };
+        const header = {
+            'Content-Type': 'application/json'
+        };
 
-    onUpdate = (querySnapshot) => {
-        const events = [];
-        querySnapshot.forEach((doc) => {
-            const { name } = doc.data();
-            events.push({
-                key: doc.id,
-                name: name
+        axios.post(url, body, header)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
             });
-        });
-        this.setState({events});
     };
-
-    onCreateEvent = () => {
-        this.setState({
-            redirect: true,
-            target: '/host'
-        })
-    }
 
     onSearch = () => {
         this.setState({
@@ -55,24 +47,38 @@ export class Home extends Component {
         }
     }
 
+    updateInputValue = (evt) => {
+        this.setState({
+            eventName: evt.target.value
+        });
+    }
+
     render() {
 
-        return <div>
-            <h1 className="title">Social Jukebox</h1>
-            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
-            {this.renderRedirect()}
+        return <Container>
             <div className="button-container">
-                <button className="home-button positive ui button" onClick={this.onCreateEvent}><span className="home-button-text">Create event</span></button>
-                <button className="home-button positive ui button" onClick={this.onSearch}><span className="home-button-text">Search & Join event</span></button>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center'>
+                            <Header as='h1'>Social Jukebox</Header>
+                            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
+                            {this.renderRedirect()}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center'>
+                            <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
+                            <Button size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center'>
+                            <p>or</p>
+                            <Link to={'/event'}>Choose an existing event</Link>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </div>
-            <Header as='h1'>Current Events</Header>
-            <ul>
-                {this.state.events.map(event =>
-                    <li key={event.key}>
-                        <Link to={`/event/${event.key}`}>{event.name}</Link>
-                    </li>
-                )}
-            </ul>
-        </div>
+        </Container>
     }
 }
