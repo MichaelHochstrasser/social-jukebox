@@ -115,7 +115,7 @@ export class FireStoreHelper {
     const docRef: DocumentReference = this.getSongDocument(song.songId);
 
     return new Promise<void>((resolve, reject) => {
-      if (song && song.playlistId && spotifyToken) {
+      if (song && !song.songId && song.playlistId && spotifyToken) {
         const spotifyHelper = new SpotifyHelper(spotifyToken);
 
         spotifyHelper
