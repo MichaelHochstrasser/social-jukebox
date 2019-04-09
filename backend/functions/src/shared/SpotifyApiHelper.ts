@@ -51,4 +51,17 @@ export class SpotifyHelper {
       throw new Error("No spotify token!");
     }
   }
+
+  getSpotifySearchResult(searchTerm: string, searchType: string) {
+    if(this.spotifyToken) {
+      return axios.get('https://api.spotify.com/v1/search', createHeader(this.spotifyToken, {
+        q: searchTerm,
+        type: searchType,
+        market: 'from_token'
+      }));
+    } else {
+      throw new Error("No spotify token!")
+    }
+  }
+
 }
