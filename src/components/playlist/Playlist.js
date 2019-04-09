@@ -19,7 +19,7 @@ export default (props) => {
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>
-                            <Button color="red" onClick={this.closeSearchBox}>Cancel</Button>
+                            <Button color="red">Cancel</Button>
                         </Modal.Actions>
                     </Modal>
                 </Grid.Column>
