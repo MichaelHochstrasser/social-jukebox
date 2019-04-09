@@ -3,10 +3,16 @@ import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { checkParamsExist } from "../shared/PropertyChecker";
 
 import { Event } from "../model/Event";
+import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import { HTTP_METHODS } from "../model/CorsConfig";
 
 const fireStoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   console.log("register new token");
   const body = request.body;
   if (checkParamsExist(body, ["eventId", "spotifyToken"])) {
