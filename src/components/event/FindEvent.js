@@ -1,6 +1,6 @@
 import firebase from "../firebase/Firebase";
 import React, {Component} from 'react';
-import {Link, Redirect} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {Button, Container, Grid, Header, Segment} from "semantic-ui-react";
 
 export class FindEvent extends Component {
