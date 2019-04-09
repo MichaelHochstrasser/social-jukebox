@@ -5,7 +5,7 @@ import {SearchSongs} from "../search/SearchSongs";
 
 export default (props) => {
     let playlistItems = props.songs.length > 0
-        ? props.songs.map(song => <PlaylistItem key={song.songId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
+        ? props.songs.map(song => <PlaylistItem key={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
         : <Header as='h2'>Duuude, what a lame party… Add some songs!</Header>;
 
     return <Grid className="App" columns={1}>

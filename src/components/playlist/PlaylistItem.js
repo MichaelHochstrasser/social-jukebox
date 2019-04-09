@@ -7,20 +7,19 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            eventId: 'Il9rNPngcXmEbE5UZaZw',    //ToDo: Add eventId here
             sessionId: 'frontendTest1',         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
     }
 
-    handleVote(vote, songId) {
+    handleVote(vote) {
         const axios = require('axios');
 
         const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/vote';
         const body = {
-            songId: songId,
-            eventId: this.state.eventId,
+            songId: this.props.songId,
+            eventId: this.props.eventId,
             vote: vote,
             sessionId: this.state.sessionId
         };
@@ -51,9 +50,9 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showResults ? <ErrorMessage /> : null }
                     <Button.Group size='mini'>
-                        <Button icon color='red' onClick={this.handleVote.bind(this, -1, 'spotify:track:6rqhFgbbKwnb9MLmUQDhG6')}><Icon name='thumbs down outline' /></Button>
+                        <Button icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
-                        <Button icon color='green' onClick={this.handleVote.bind(this, 1, 'spotify:track:6rqhFgbbKwnb9MLmUQDhG6')}><Icon name='thumbs up outline' /></Button>
+                        <Button icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>
