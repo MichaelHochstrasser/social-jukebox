@@ -1,7 +1,7 @@
 export enum HTTP_METHODS {
-  POST,
-  GET,
-  OPTIONS
+  POST = "POST",
+  GET = "GET",
+  OPTIONS = "OPTIONS"
 }
 
 export interface CorsConfig {
