@@ -51,7 +51,7 @@ export class PlaySite extends Component {
             <MenuBasic eventId={this.props.match.params.id}/>
             <Container>
                 <Playheader/>
-                <Playlist closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
+                <Playlist eventId={this.props.match.params.id} closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
             </Container>
         </div>
     }
