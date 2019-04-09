@@ -50,7 +50,7 @@ export class FindEvent extends Component {
                         <Grid.Row>
                             <Grid.Column>
                                 {this.state.events.map(event =>
-                                    <Link to={`/event/${event.key}`}>
+                                    <Link to={`/event/${event.key}`} key={event.key}>
                                         <Segment>
                                             {event.name}
                                         </Segment>
