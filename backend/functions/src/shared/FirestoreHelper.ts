@@ -32,7 +32,7 @@ export class FireStoreHelper {
       if (event && event.playlistId) {
         resolve(event.playlistId);
       } else if (event.spotifyToken) {
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken);
+        const spotifyHelper = new SpotifyHelper(event.spotifyToken, event.refreshToken, event.validUntil);
 
         spotifyHelper
           .createPlaylist(event.name)
