@@ -5,8 +5,9 @@ import { Event } from "../model/Event";
 import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
 import { HTTP_METHODS } from "../model/CorsConfig";
 
-const querystring = require("querystring");
-const r = require("request");
+import * as querystring from "querystring";
+import * as r from "request";
+
 const fireStoreHelper = new FireStoreHelper();
 
 //test: GET https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken&scope=user-read-private%20playlist-modify-public%20playlist-modify-private&state=lfBoWpMRpm19kDTZp7P1
@@ -82,12 +83,12 @@ export default functions.https.onRequest((request, response) => {
               response.redirect(`http://localhost:3000/event/${eventId}`);
               return;
             })
-            .catch(err => {
-              throw err;
+            .catch((updateEventErr: Error) => {
+              throw updateEventErr;
             });
         })
-        .catch((err: Error) => {
-          response.status(500).send(err.message);
+        .catch((getEventErr: Error) => {
+          response.status(500).send(getEventErr.message);
         });
     } else {
       response.status(500).send("Invalid access token.");
