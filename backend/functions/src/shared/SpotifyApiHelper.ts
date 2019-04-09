@@ -123,9 +123,9 @@ export class SpotifyHelper {
       });
   }
 
-  addSongToPlaylist() {}
+  // addSongToPlaylist() {}
 
-  reorderSongsOnPlaylist() {}
+  // reorderSongsOnPlaylist() {}
 
   getSpotifySearchResult(searchTerm: string, searchType: string) {
     if (this.spotifyToken) {
