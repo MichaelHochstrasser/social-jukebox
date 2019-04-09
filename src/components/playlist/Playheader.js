@@ -7,7 +7,6 @@ export class Playheader extends Component {
     constructor(props) {
         super(props);
         this.db = firebase.firestore().collection('test');
-        const song = {title: String, artist: String, time: String};
         this.state = {
             currentSong: {title: 'Hit me baby one more time', artist: 'Britney', time: '2:15'}
         };
