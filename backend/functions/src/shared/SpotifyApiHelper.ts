@@ -5,7 +5,8 @@ import { SpotifyTrack } from "../model/SpotifyTrack";
 import {
   createSpotifyAPITrackURL,
   createSpotifyAPICreatePlaylistURL,
-  createSpotifyAPIUserProfileURL
+  createSpotifyAPIUserProfileURL,
+  createSpotifyAPIAddToPlaylistURL
 } from "./constants";
 
 export function createHeader(
@@ -123,7 +124,34 @@ export class SpotifyHelper {
       });
   }
 
-  // addSongToPlaylist() {}
+  addSongToPlaylist(playlistId: string, songId: string): Promise<boolean> {
+    const addToPlaylistRequestUrl = createSpotifyAPIAddToPlaylistURL(
+      playlistId
+    );
+
+    if (this.spotifyToken) {
+      return axios
+        .post(
+          addToPlaylistRequestUrl,
+          {
+            uris: [`spotify:track:${songId}`]
+          },
+          createHeader(this.spotifyToken, "application/json")
+        )
+        .then((response: any) => {
+          if (response.status === 201 || response.status === 200) {
+            return true;
+          } else {
+            throw new Error("Failed to Add Song to Playlist!");
+          }
+        })
+        .catch(err => {
+          throw err;
+        });
+    } else {
+      throw new Error("Spotify token not set!");
+    }
+  }
 
   // reorderSongsOnPlaylist() {}
 

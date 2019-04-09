@@ -48,14 +48,15 @@ export default functions.https.onRequest((request, response) => {
                 .addOrUpdateSong(
                   new Song(
                     request.body[eventIdAttr],
-                    "", // TODO: Set Playlist ID!
+                    event.playlistId || "",
                     request.body[songIdAttr],
                     result.title,
                     result.artist,
                     result.duration_ms,
                     result.popularity,
                     result.image
-                  )
+                  ),
+                  event.spotifyToken
                 )
                 .then(() => response.status(200).send())
                 .catch(msg => response.status(500).send(msg));
