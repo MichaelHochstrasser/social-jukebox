@@ -2,10 +2,16 @@ import * as functions from "firebase-functions";
 import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { Event } from "../model/Event";
+import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import { HTTP_METHODS } from "../model/CorsConfig";
 
 const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   const nameAttribute: string = "name";
 
   if (
