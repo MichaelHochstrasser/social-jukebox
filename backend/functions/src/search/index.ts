@@ -15,9 +15,12 @@ export default functions.https.onRequest((request, response) => {
   const searchTermParam: string = "term";
   const searchTypeParam: string = "type";
 
-  corsEnabledFunctionAuth(request, response, {
-    methods: [HTTP_METHODS.GET]
-  });
+  if (request.method === "OPTIONS") {
+    corsEnabledFunctionAuth(request, response, {
+      methods: [HTTP_METHODS.GET]
+    });
+    return;
+  }
 
   if (
     request.method !== "GET" ||

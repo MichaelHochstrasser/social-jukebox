@@ -1,6 +1,6 @@
-import firebase from "../firebase/Firebase";
 import React, {Component} from 'react';
 import {Link, Redirect} from "react-router-dom";
+import {Button, Container, Grid, Header, Input} from "semantic-ui-react";
 import PlaylistItem from "../playlist/Playlist";
 import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react";
 import {Image} from "semantic-ui-react";

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Container, Header, Input} from 'semantic-ui-react';
+import {Container, Input} from 'semantic-ui-react';
 
 export default () => {
   return (

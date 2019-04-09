@@ -17,9 +17,12 @@ export default functions.https.onRequest((request, response) => {
   const songIdAttr = "songId";
   const eventIdAttr = "eventId";
 
-  corsEnabledFunctionAuth(request, response, {
-    methods: [HTTP_METHODS.POST]
-  });
+  if (request.method === "OPTIONS") {
+    corsEnabledFunctionAuth(request, response, {
+      methods: [HTTP_METHODS.POST]
+    });
+    return;
+  }
 
   if (
     request.method !== "POST" ||
@@ -45,14 +48,15 @@ export default functions.https.onRequest((request, response) => {
                 .addOrUpdateSong(
                   new Song(
                     request.body[eventIdAttr],
-                    "", // TODO: Set Playlist ID!
+                    event.playlistId || "",
                     request.body[songIdAttr],
                     result.title,
                     result.artist,
                     result.duration_ms,
                     result.popularity,
                     result.image
-                  )
+                  ),
+                  event.spotifyToken
                 )
                 .then(() => response.status(200).send())
                 .catch(msg => response.status(500).send(msg));
