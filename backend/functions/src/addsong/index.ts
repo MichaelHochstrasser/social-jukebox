@@ -8,12 +8,18 @@ import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 
 import { Song } from "../model/Song";
 import { Event } from "../model/Event";
+import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import { HTTP_METHODS } from "../model/CorsConfig";
 
 const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
   const songIdAttr = "songId";
   const eventIdAttr = "eventId";
+
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
 
   if (
     request.method !== "POST" ||
