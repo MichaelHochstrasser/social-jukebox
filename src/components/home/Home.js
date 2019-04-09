@@ -2,7 +2,7 @@ import firebase from "../firebase/Firebase";
 import React, {Component} from 'react';
 import {Link, Redirect} from "react-router-dom";
 import PlaylistItem from "../playlist/Playlist";
-import {Button, Container, Grid, Header, Input} from "semantic-ui-react";
+import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react";
 import {Image} from "semantic-ui-react";
 import './Home.css';
 
@@ -12,7 +12,8 @@ export class Home extends Component {
         super(props);
         this.state = {
             redirect: false,
-            eventName: ''
+            eventName: '',
+            showError: false
         };
     }
 
@@ -28,11 +29,20 @@ export class Home extends Component {
         };
 
         axios.post(url, body, header)
-            .then(function (response) {
+            .then((response) => {
                 console.log(response);
+                this.setState({
+                    redirect: true,
+                    target: `/event/${response.data.eventId}/setting`,
+                    showError: false
+                })
+
             })
-            .catch(function (error) {
+            .catch((error) => {
                 console.log(error);
+                this.setState({
+                  showError: true
+                })
             });
     };
 
@@ -62,13 +72,14 @@ export class Home extends Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
-                            <Header as='h1'>Social Jukebox</Header>
+                            <Header as='h1'>Social Jukebox: {this.state.message}</Header>
                             <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
                             {this.renderRedirect()}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
+                            { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
                             <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
                             <Button size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                         </Grid.Column>
@@ -82,5 +93,13 @@ export class Home extends Component {
                 </Grid>
             </div>
         </Container>
+    }
+}
+
+class ErrorMessage extends Component{
+    render() {
+        return (
+            <Message color='red'>{this.props.message}</Message>
+        )
     }
 }

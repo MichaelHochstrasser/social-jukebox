@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Button, Icon, Table, Header, Image, Message} from 'semantic-ui-react'
-import { axios } from 'axios'
+import axios from 'axios';
 
 class PlaylistItem extends Component {
 
@@ -14,8 +14,6 @@ class PlaylistItem extends Component {
     }
 
     handleVote(vote) {
-        const axios = require('axios');
-
         const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/vote';
         const body = {
             songId: this.props.songId,
@@ -28,11 +26,15 @@ class PlaylistItem extends Component {
         };
 
         axios.post(url, body, header)
-        .then(function (response) {
+        .then((response) => {
             console.log(response);
+            const event = response.data;
+            this.setState({showError: false});
+
         })
-        .catch(function (error) {
+        .catch((error) => {
             console.log(error);
+            this.setState({showError: true});
         });
     };
 
@@ -48,7 +50,7 @@ class PlaylistItem extends Component {
                     </Header>
                 </Table.Cell>
                 <Table.Cell textAlign='right'>
-                    { this.state.showResults ? <ErrorMessage /> : null }
+                    { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
                         <Button icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
@@ -62,7 +64,7 @@ class PlaylistItem extends Component {
 class ErrorMessage extends Component{
     render() {
         return (
-            <Message color='green'>Success</Message>
+            <Message color='red'>{this.props.message}</Message>
         )
     }
 }
