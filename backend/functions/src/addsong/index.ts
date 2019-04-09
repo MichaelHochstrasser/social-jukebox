@@ -1,7 +1,10 @@
 import * as functions from "firebase-functions";
 
-import { checkParamsExist } from "../shared/propertychecker";
+import { SpotifyTrack } from "../model/SpotifyTrack";
+
+import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
+import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 
 import { Song } from "../model/Song";
 import { Event } from "../model/Event";
@@ -25,12 +28,32 @@ export default functions.https.onRequest((request, response) => {
     .getEvent(request.body[eventIdAttr])
     .then((event: Event | void) => {
       if (event && event.eventId === request.body[eventIdAttr]) {
-        firestoreHelper
-          .addOrUpdateSong(
-            new Song(request.body[eventIdAttr], request.body[songIdAttr])
-          )
-          .then(() => response.status(200).send())
-          .catch(msg => response.status(500).send(msg));
+        const spotifyHelper = new SpotifyHelper(event.spotifyToken);
+        spotifyHelper
+          .getSongInfo(request.body[songIdAttr])
+          .then((result: SpotifyTrack | void) => {
+            if (!result) {
+              response.status(500).send("Song not found!");
+            } else {
+              firestoreHelper
+                .addOrUpdateSong(
+                  new Song(
+                    request.body[eventIdAttr],
+                    request.body[songIdAttr],
+                    result.name,
+                    result.artist,
+                    result.duration_ms,
+                    result.popularity,
+                    result.image
+                  )
+                )
+                .then(() => response.status(200).send())
+                .catch(msg => response.status(500).send(msg));
+            }
+          })
+          .catch((err: Error) => {
+            response.status(500).send(err.message);
+          });
       } else {
         response.status(500).send("Event not found.");
       }

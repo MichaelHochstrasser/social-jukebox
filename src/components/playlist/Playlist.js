@@ -1,7 +1,7 @@
 import React from 'react';
-import {Grid, Button, Modal, Table, Header, Icon} from 'semantic-ui-react'
+import {Grid, Button, Modal, Table, Header} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
-import {SearchSongs} from "../SearchSongs";
+import {SearchSongs} from "../search/SearchSongs";
 
 export default (props) => {
     let playlistItems = props.songs.length > 0
