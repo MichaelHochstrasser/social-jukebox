@@ -10,29 +10,11 @@ export class Home extends Component {
 
     constructor(props) {
         super(props);
-
-        this.db = firebase.firestore().collection('Events');
     }
 
     state = {
         redirect: false
     }
-
-    componentDidMount() {
-        this.db.onSnapshot(this.onUpdate )
-    }
-
-    onUpdate = (querySnapshot) => {
-        const events = [];
-        querySnapshot.forEach((doc) => {
-            const { name } = doc.data();
-            events.push({
-                key: doc.id,
-                name: name
-            });
-        });
-        this.setState({events});
-    };
 
     onSearch = () => {
         this.setState({
