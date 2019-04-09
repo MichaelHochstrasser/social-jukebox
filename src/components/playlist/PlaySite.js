@@ -14,8 +14,17 @@ export class PlaySite extends Component {
         this.updateSongs = this.updateSongs.bind(this);
 
         this.state = {
-            songs: []
+            songs: [],
+            isModalOpen: false
         };
+    }
+
+    openModal() {
+        this.setState({isModalOpen: true});
+    }
+
+    closeModal() {
+        this.setState({isModalOpen: false});
     }
 
     componentDidMount() {
@@ -39,7 +48,7 @@ export class PlaySite extends Component {
     render() {
         return <Container>
             <Playheader/>
-            <Playlist songs={this.state.songs} />
+            <Playlist closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
         </Container>
     }
 }
