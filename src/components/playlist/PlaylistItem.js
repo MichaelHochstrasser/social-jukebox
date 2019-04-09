@@ -7,7 +7,7 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: 'frontendTest1',         //ToDo: Add sessionId here
+            sessionId: 'frontendTest14',         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
@@ -30,7 +30,7 @@ class PlaylistItem extends Component {
             console.log(response);
             const event = response.data;
             this.setState({showError: false});
-
+            return;
         })
         .catch((error) => {
             console.log(error);
