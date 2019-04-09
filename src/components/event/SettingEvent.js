@@ -3,6 +3,7 @@ import {Redirect} from "react-router-dom";
 import {Button, Container, Grid, Header} from "semantic-ui-react";
 import {MenuBasic} from "../menu/MenuBasic";
 import QRCode from 'qrcode-react';
+import firebase from "../firebase/Firebase";
 
 export class SettingEvent extends Component {
 
