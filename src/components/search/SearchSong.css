@@ -1,0 +1,12 @@
+.results {
+    width: 100% !important;
+}
+
+.ui.search > .results {
+    overflow-y: auto;
+    max-height: 260px;
+}
+
+.song-title {
+    font-weight: bold;
+}
