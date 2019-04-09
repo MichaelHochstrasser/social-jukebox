@@ -11,13 +11,16 @@ export default (props) => {
     return <Grid className="App" columns={1}>
             <Grid.Row>
                 <Grid.Column textAlign='right'>
-                    <Modal trigger={ <Button color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
+                    <Modal open={props.isModalOpen} trigger={ <Button onClick={props.openModal} color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
                         <Modal.Header>Search for a song to add</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
                                 <SearchSongs/>
                             </Modal.Description>
                         </Modal.Content>
+                        <Modal.Actions>
+                            <Button color='red' onClick={props.closeModal}>Cancel</Button>
+                        </Modal.Actions>
                     </Modal>
                 </Grid.Column>
             </Grid.Row>
