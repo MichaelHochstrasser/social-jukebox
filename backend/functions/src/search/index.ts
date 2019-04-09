@@ -55,11 +55,11 @@ function mapToSpotifyTracks(res: any): SpotifyTrack[] {
         res.tracks.items.forEach((track: any) => {
             const imageIndex: number = track.album.images.length > 2 ? track.album.images.length - 2 : track.album.images.length -1;
             tracks.push({
-                name: track.name,
+                title: track.name,
                 popularity: track.popularity,
                 id: track.id,
                 duration_ms: track.duration_ms,
-                artist: track.artists[0].name,
+                artist: track.artists.map((artist: { name: string }) => artist.name).join(","),
                 image: track.album.images[imageIndex].url
             })
         });
