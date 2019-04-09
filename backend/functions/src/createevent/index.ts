@@ -28,6 +28,12 @@ export default functions.https.onRequest((request, response) => {
 
   return firestoreHelper
     .createOrUpdateEvent(new Event(request.body[nameAttribute]))
-    .then(() => response.status(200).send())
+    .then((event: Event | void) => {
+      if(event) {
+        response.status(200).send(event);
+      } else {
+        throw Error("Could not persist event");
+      }
+    })
     .catch(msg => response.status(500).send(msg));
 });
