@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Grid, Button, Modal, Table, Image, Header, Icon} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import firebase from "../firebase/Firebase";
-import {SearchSongs} from "../SearchSongs";
+import {SearchSongs} from "../search/SearchSongs";
 
 class Playlist extends Component {
     constructor(props) {
