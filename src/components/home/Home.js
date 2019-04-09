@@ -10,11 +10,31 @@ export class Home extends Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            redirect: false,
+            eventName: ''
+        };
     }
 
-    state = {
-        redirect: false
-    }
+    createEvent() {
+        const axios = require('axios');
+
+        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
+        const body = {
+            nameAttribute: this.state.eventName,
+        };
+        const header = {
+            'Content-Type': 'application/json'
+        };
+
+        axios.post(url, body, header)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
 
     onSearch = () => {
         this.setState({
@@ -29,17 +49,24 @@ export class Home extends Component {
         }
     }
 
+    updateInputValue = (evt) => {
+        this.setState({
+            eventName: evt.target.value
+        });
+    }
+
     render() {
 
         return <Container>
-            <h1 className="title">Social Jukebox</h1>
+            <h1 className="title">New Event {this.state.eventName}</h1>
             <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
             {this.renderRedirect()}
             <div className="button-container">
                 <Grid>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
-                            <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' action='Create'/>
+                            <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
+                            <Button size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
