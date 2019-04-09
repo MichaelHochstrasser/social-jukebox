@@ -85,7 +85,7 @@ export class SpotifyHelper {
 
           if (this.spotifyToken) {
             return axios
-              .post(playlistRequestUrl, ,createHeader(this.spotifyToken)) // TODO: Content-Type, etc...
+              .post(playlistRequestUrl, {}, createHeader(this.spotifyToken)) // TODO: Content-Type, etc...
               .then((response: any) => {
                 if (response.data) {
                   return response.data.id; // TODO: Return the playlist-id
