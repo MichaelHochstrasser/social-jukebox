@@ -1,6 +1,7 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 
 import { SpotifyTrack } from "../model/SpotifyTrack";
+import { stringify } from "querystring";
 
 import {
   createSpotifyAPITrackURL,
@@ -8,6 +9,8 @@ import {
   createSpotifyAPIUserProfileURL,
   createSpotifyAPIAddToPlaylistURL
 } from "./constants";
+
+import {FireStoreHelper} from "./FirestoreHelper";
 
 export function createHeader(
   token: string,
@@ -33,14 +36,14 @@ export function createHeader(
 }
 
 export class SpotifyHelper {
-  constructor(private spotifyToken?: string) {}
+  constructor(private accessToken?: string, private refreshToken?: string, private validUntil?: number) {}
 
   getSongInfo(songId: string): Promise<SpotifyTrack | void> {
     const requestUrl = createSpotifyAPITrackURL(songId);
 
-    if (this.spotifyToken) {
+    if (this.accessToken) {
       return axios
-        .get(requestUrl, createHeader(this.spotifyToken))
+        .get(requestUrl, createHeader(this.accessToken))
         .then((response: any) => {
           if (response.data) {
             return {
@@ -68,9 +71,9 @@ export class SpotifyHelper {
   getUserId(): Promise<string> {
     const requestUrl = createSpotifyAPIUserProfileURL();
 
-    if (this.spotifyToken) {
+    if (this.accessToken) {
       return axios
-        .get(requestUrl, createHeader(this.spotifyToken))
+        .get(requestUrl, createHeader(this.accessToken))
         .then((response: any) => {
           if (response.data) {
             return response.data.id;
@@ -92,7 +95,7 @@ export class SpotifyHelper {
         if (userId) {
           const playlistRequestUrl = createSpotifyAPICreatePlaylistURL(userId);
 
-          if (this.spotifyToken) {
+          if (this.accessToken) {
             return axios
               .post(
                 playlistRequestUrl,
@@ -100,7 +103,7 @@ export class SpotifyHelper {
                   name,
                   public: true
                 },
-                createHeader(this.spotifyToken, "application/json")
+                createHeader(this.accessToken, "application/json")
               )
               .then((response: any) => {
                 if (response.data && response.data.id) {
@@ -129,14 +132,14 @@ export class SpotifyHelper {
       playlistId
     );
 
-    if (this.spotifyToken) {
+    if (this.accessToken) {
       return axios
         .post(
           addToPlaylistRequestUrl,
           {
             uris: [`spotify:track:${songId}`]
           },
-          createHeader(this.spotifyToken, "application/json")
+          createHeader(this.accessToken, "application/json")
         )
         .then((response: any) => {
           if (response.status === 201 || response.status === 200) {
@@ -153,20 +156,73 @@ export class SpotifyHelper {
     }
   }
 
-  // reorderSongsOnPlaylist() {}
+  reorderSongsOnPlaylist() {}
 
-  getSpotifySearchResult(searchTerm: string, searchType: string) {
-    if (this.spotifyToken) {
-      return axios.get(
-        "https://api.spotify.com/v1/search",
-        createHeader(this.spotifyToken, "", {
-          q: searchTerm,
-          type: searchType,
-          market: "from_token"
-        })
-      );
-    } else {
-      throw new Error("No spotify token!");
+  async getSpotifySearchResult(searchTerm: string, searchType: string): Promise<AxiosResponse> {
+    if (!this.accessToken) {
+      throw new Error("no access token");
     }
+
+    await this.refreshAccessToken();
+
+    return axios.get(
+      "https://api.spotify.com/v1/search",
+      createHeader(this.accessToken, "", {
+        q: searchTerm,
+        type: searchType,
+        market: "from_token"
+      })
+    );
+  }
+
+  async refreshAccessToken(force: boolean = false){
+    if (!this.refreshToken){
+      throw new Error("no refresh token to request new access token");
+    }
+    if (force || this.hasAccessTokenExpired()){
+      const oldAccessToken = this.accessToken;
+
+      const authorizationString = Buffer.from("68fd4d58904748c7bc63c038fa3a5f01:4b10c006070340f09fac901f138b56ea").toString('base64');
+      const postData = stringify({
+        grant_type: "refresh_token",
+        refresh_token: this.refreshToken
+      });
+      const header = {
+        Authorization: `Basic ${authorizationString}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": postData.length
+      };
+      const config: AxiosRequestConfig = {
+        url: "https://accounts.spotify.com/api/token",
+        method: "POST",
+        data: postData,
+        headers: header
+      };
+      await axios.request(config)
+        .then(response => {
+          if(response.data && response.data.access_token){
+            const fireStoreHelper = new FireStoreHelper();
+            this.accessToken = response.data.access_token;
+            const expiresIn = response.data.expires_in;
+            this.validUntil = Date.now() + expiresIn * 1000;
+            if(oldAccessToken && this.accessToken && this.refreshToken){
+              fireStoreHelper.updateTokens(oldAccessToken, this.accessToken, this.refreshToken, this.validUntil);
+            }
+          }
+        })
+        .catch(err => {
+          throw err;
+        });
+    }
+  }
+
+  private hasAccessTokenExpired(): boolean {
+    if (!this.validUntil){
+      return true;
+    }
+    if (Date.now() > this.validUntil - 100000){
+      return true;
+    }
+    return false;
   }
 }

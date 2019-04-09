@@ -43,7 +43,7 @@ export default functions.https.onRequest((request, response) => {
           response.status(400).send("Spotify Token Required!");
           return;
         }
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken);
+        const spotifyHelper = new SpotifyHelper(event.spotifyToken, event.refreshToken, event.validUntil);
         spotifyHelper
           .getSpotifySearchResult(searchTerm, searchType)
           .then((res: any) =>

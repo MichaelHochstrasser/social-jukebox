@@ -59,28 +59,27 @@ export default functions.https.onRequest((request, response) => {
         song.voters &&
         song.voters.findIndex(voter => voter === request.body[voterAttr]) !== -1
       ) {
-        throw new Error("Voter has already voted!");
+        // Voter has already voted
+        response.status(200).json({ status: "already_voted" });
+        return;
       } else {
-        return song;
+        return firestoreHelper
+          .addOrUpdateSong({
+            ...song,
+            voters: [...song.voters, request.body[voterAttr]],
+            voteCount: song.voteCount + parseInt(request.body[voteAttr])
+          } as Song)
+          .then((updatedSong: Song | void) => {
+            if (updatedSong) {
+              response.status(200).json({ status: "success" });
+            } else {
+              throw new Error("Error while updating the song");
+            }
+          })
+          .catch(err => {
+            throw err;
+          });
       }
-    })
-    .then((song: Song) => {
-      firestoreHelper
-        .addOrUpdateSong({
-          ...song,
-          voters: [...song.voters, request.body[voterAttr]],
-          voteCount: song.voteCount + parseInt(request.body[voteAttr])
-        } as Song)
-        .then((updatedSong: Song | void) => {
-          if (updatedSong) {
-            response.status(200).send();
-          } else {
-            throw new Error("Error while updating the song");
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
     })
     .catch((msg: Error) => {
       response.status(500).send(msg.message);

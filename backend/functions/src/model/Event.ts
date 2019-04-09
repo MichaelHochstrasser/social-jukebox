@@ -1,6 +1,8 @@
 export class Event {
   eventId?: string;
   spotifyToken?: string;
+  refreshToken?: string;
+  validUntil?: number;
   playlistId?: string;
 
   constructor(
