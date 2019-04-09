@@ -3,6 +3,7 @@ import {Search} from "semantic-ui-react";
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import './SearchSong.css';
+import './circle.css';
 
 const songs = [
     {
@@ -178,7 +179,13 @@ const resultRenderer = ({id, image, title, artist, duration_ms, popularity}) => 
             <div className='song-duration'>{millisToMinutesAndSeconds(duration_ms)}</div>
         </div>
         <div className='right-content'>
-            <div>{popularity}%</div>
+            <div className={'small green c100 p' + popularity}>
+            <span>{popularity}%</span>
+            <div className="slice">
+                <div className="bar"></div>
+                <div className="fill"></div>
+            </div>
+        </div>
         </div>
     </div>
 };
