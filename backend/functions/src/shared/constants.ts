@@ -4,3 +4,14 @@ export const CORS_ALLOWED_ORIGINS = "*";
 
 export const createSpotifyAPITrackURL = (songId: string) =>
   `${SPOTIFY_API_BASEURL}/tracks/${songId}`;
+
+export const createSpotifyAPICreatePlaylistURL = (userId: string) =>
+  `${SPOTIFY_API_BASEURL}/users/${userId}/playlists`;
+
+export const createSpotifyAPIAddToPlaylistURL = (playlistId: string) =>
+  `${SPOTIFY_API_BASEURL}/playlists/${playlistId}/tracks`;
+
+export const createSpotifyAPIReorderPlaylistURL = (playlistId: string) =>
+  `${SPOTIFY_API_BASEURL}/playlists/${playlistId}/tracks`;
+
+export const createSpotifyAPIUserProfileURL = () => `${SPOTIFY_API_BASEURL}/me`;

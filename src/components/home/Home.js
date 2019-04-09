@@ -67,7 +67,11 @@ export class Home extends Component {
             </div>
             <Header as='h1'>Current Events</Header>
             <ul>
-                {this.state.events.map(event => <li key={event.key}><Link to={`/event/${event.key}`}>{event.name}</Link></li>)}
+                {this.state.events.map(event =>
+                    <li key={event.key}>
+                        <Link to={`/event/${event.key}`}>{event.name}</Link>
+                    </li>
+                )}
             </ul>
         </div>
     }
