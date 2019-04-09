@@ -6,5 +6,5 @@ export enum HTTP_METHODS {
 
 export interface CorsConfig {
   methods: HTTP_METHODS[];
-  origin: string;
+  origin?: string;
 }
