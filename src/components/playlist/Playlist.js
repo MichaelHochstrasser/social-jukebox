@@ -15,7 +15,7 @@ export default (props) => {
                         <Modal.Header>Search for a song to add</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
-                                <SearchSongs/>
+                                <SearchSongs closeModal={props.closeModal}/>
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>
