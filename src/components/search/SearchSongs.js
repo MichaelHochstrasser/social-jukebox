@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Search, Table} from "semantic-ui-react";
+import {Search} from "semantic-ui-react";
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import './SearchSong.css';
@@ -168,7 +168,7 @@ const songs = [
 ];
 
 const resultRenderer = ({id, image, title, artist, duration_ms, popularity}) => {
-    return <div className='main-container'>
+    return <div className='main-container' key={id}>
         <div className='left-content'>
             <img alt='song' height={55} src={image}/>
         </div>
@@ -216,12 +216,13 @@ export class SearchSongs extends Component {
         setTimeout(() => {
             if (this.state.value.length < 1) return this.resetComponent()
 
+            const newSongs = songs.map(s => ({ ...s, key: s.id }));
             const re = new RegExp(_.escapeRegExp(this.state.value), 'i')
             const isMatch = result => re.test(result.title) || re.test(result.artist)
 
             this.setState({
                 isLoading: false,
-                results: _.filter(songs, isMatch),
+                results: _.filter(newSongs, isMatch).sort((a, b) => (a.popularity < b.popularity) ? 1 : -1),
             })
         }, 300)
     }

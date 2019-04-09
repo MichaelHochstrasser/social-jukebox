@@ -1,7 +1,7 @@
 import firebase from "../firebase/Firebase";
 import React, {Component} from 'react';
 import {Link, Redirect} from "react-router-dom";
-import {Button, Container, Grid, Segment} from "semantic-ui-react";
+import {Button, Container, Grid, Header, Segment} from "semantic-ui-react";
 
 export class FindEvent extends Component {
 
@@ -33,26 +33,34 @@ export class FindEvent extends Component {
 
     render() {
 
-        return <Container>
-            <Grid>
-                <h1>Choose an Event</h1>
-                <Grid.Row>
-                    <Grid.Column textAlign='right'>
-                        <Button basic><Link to={'/'}>Create new Event</Link></Button>
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        {this.state.events.map(event =>
-                            <Link to={`/event/${event.key}`}>
-                                <Segment>
-                                    {event.name}
-                                </Segment>
-                            </Link>
-                        )}
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </Container>
+        return <div>
+            <Container>
+                <div className="button-container">
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column textAlign='center'>
+                                <Header as='h1'>Choose an event</Header>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column textAlign='right'>
+                                <Button basic><Link to={'/'}>Create new Event</Link></Button>
+                            </Grid.Column>
+                        </Grid.Row>
+                        <Grid.Row>
+                            <Grid.Column>
+                                {this.state.events.map(event =>
+                                    <Link to={`/event/${event.key}`}>
+                                        <Segment>
+                                            {event.name}
+                                        </Segment>
+                                    </Link>
+                                )}
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
+                </div>
+            </Container>
+        </div>
     }
 }
