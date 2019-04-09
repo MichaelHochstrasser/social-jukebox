@@ -21,7 +21,7 @@ export class Home extends Component {
 
         const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
         const body = {
-            nameAttribute: this.state.eventName,
+            name: this.state.eventName,
         };
         const header = {
             'Content-Type': 'application/json'
@@ -58,11 +58,15 @@ export class Home extends Component {
     render() {
 
         return <Container>
-            <h1 className="title">New Event {this.state.eventName}</h1>
-            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
-            {this.renderRedirect()}
             <div className="button-container">
                 <Grid>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center'>
+                            <Header as='h1'>Social Jukebox</Header>
+                            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
+                            {this.renderRedirect()}
+                        </Grid.Column>
+                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
                             <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
