@@ -5,6 +5,8 @@ import {Event} from "../model/Event";
 import {SearchType} from "../model/SearchType";
 import {SpotifyHelper} from "../shared/SpotifyApiHelper";
 import {SpotifyTrack} from "../model/SpotifyTrack";
+import {corsEnabledFunctionAuth} from "../shared/CloudFunctionsUtils";
+import {HTTP_METHODS} from "../model/CorsConfig";
 
 const firestoreHelper = new FireStoreHelper();
 
@@ -12,6 +14,10 @@ export default functions.https.onRequest((request, response) => {
     const eventIdParam: string = 'eventId';
     const searchTermParam: string = 'term';
     const searchTypeParam: string = 'type';
+
+    corsEnabledFunctionAuth(request, response, {
+        methods: [HTTP_METHODS.GET]
+    });
 
     if (request.method != 'GET' || !request.query || !checkParamsExist(request.query, [eventIdParam, searchTermParam])) {
         response.status(400).send("Bad Request!");
