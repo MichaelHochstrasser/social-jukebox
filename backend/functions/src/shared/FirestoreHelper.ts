@@ -115,26 +115,24 @@ export class FireStoreHelper {
     const docRef: DocumentReference = this.getSongDocument(song.songId);
 
     return new Promise<void>((resolve, reject) => {
-      if (song && song.playlistId && spotifyToken) {
-        // Only add new song to playlist on spotify
-        if (!song.id) {
-          const spotifyHelper = new SpotifyHelper(spotifyToken);
+      if (song && song.id) {
+        // If the song is not new, we don't need to add it to the playlist.
+        resolve();
+      } else if (song && !song.id && song.playlistId && spotifyToken) {
+        const spotifyHelper = new SpotifyHelper(spotifyToken);
 
-          spotifyHelper
-            .addSongToPlaylist(song.playlistId, song.songId)
-            .then(success => {
-              if (success) {
-                resolve();
-              } else {
-                reject(new Error("Could not add Song to Spotify Playlist!"));
-              }
-            })
-            .catch(err => {
-              throw err;
-            });
-        } else {
-          resolve();
-        }
+        spotifyHelper
+          .addSongToPlaylist(song.playlistId, song.songId)
+          .then(success => {
+            if (success) {
+              resolve();
+            } else {
+              reject(new Error("Could not add Song to Spotify Playlist!"));
+            }
+          })
+          .catch(err => {
+            throw err;
+          });
       } else {
         reject(new Error("Playlist ID or Spotifytoken not available!"));
       }
