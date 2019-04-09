@@ -17,9 +17,12 @@ export default functions.https.onRequest((request, response) => {
   const songIdAttr = "songId";
   const eventIdAttr = "eventId";
 
-  corsEnabledFunctionAuth(request, response, {
-    methods: [HTTP_METHODS.POST]
-  });
+  if (request.method === "OPTIONS") {
+    corsEnabledFunctionAuth(request, response, {
+      methods: [HTTP_METHODS.POST]
+    });
+    return;
+  }
 
   if (
     request.method !== "POST" ||

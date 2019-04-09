@@ -8,9 +8,12 @@ import { HTTP_METHODS } from "../model/CorsConfig";
 const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
-  corsEnabledFunctionAuth(request, response, {
-    methods: [HTTP_METHODS.POST]
-  });
+  if (request.method === "OPTIONS") {
+    corsEnabledFunctionAuth(request, response, {
+      methods: [HTTP_METHODS.POST]
+    });
+    return;
+  }
 
   const nameAttribute: string = "name";
 
