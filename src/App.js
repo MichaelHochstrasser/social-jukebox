@@ -19,7 +19,7 @@ class App extends Component {
             <Route exact path="/" component={Home} />
             <Route exact path="/host" component={HostNewEvent} />
             <Route exact path="/host/event" render={ (props) => <EventInvitation {...props} eventName="Sofia's Super Sweet 16" eventLink="https://spotify.com" /> } />
-            <Route path="/event" component={PlaySite} />
+            <Route path="/event/:id" component={PlaySite} />
           </Router>
         </div>
     );
