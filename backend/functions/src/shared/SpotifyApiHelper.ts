@@ -29,7 +29,7 @@ export class SpotifyHelper {
       return axios
         .get(requestUrl, createHeader(this.spotifyToken))
         .then((response: any) => {
-          console.log(JSON.parse(response));
+          console.log(response);
         })
         .catch(err => {
           throw err;
