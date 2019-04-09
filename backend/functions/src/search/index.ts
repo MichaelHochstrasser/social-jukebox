@@ -4,6 +4,7 @@ import {FireStoreHelper} from "../shared/FirestoreHelper";
 import {Event} from "../model/Event";
 import {SearchType} from "../model/SearchType";
 import {createHeader} from "../shared/SpotifyApiHelper";
+import {SpotifyTrack} from "../model/SpotifyTrack";
 
 const firestoreHelper = new FireStoreHelper();
 const axios = require('axios');
@@ -30,10 +31,10 @@ export default functions.https.onRequest((request, response) => {
                     return;
                 }
                 getSpotifySearchResult(searchTerm, searchType, event.spotifyToken)
-                    .then((res: any) => response.status(200).send(mapSpotifySearchResult(res.data)))
+                    .then((res: any) => response.status(200).send(mapToSpotifyTracks(res.data)))
                     .catch((err: any) => {
                         console.error(err.response);
-                        response.status(500).send(err.response.statusText)
+                        response.status(500).send("Internal Error")
                     })
             }
         })
@@ -44,10 +45,26 @@ export default functions.https.onRequest((request, response) => {
 function getSpotifySearchResult(searchTerm: string, searchType: string, apiToken: string) {
     return axios.get('https://api.spotify.com/v1/search', createHeader(apiToken, {
         q: searchTerm,
-        type: searchType
+        type: searchType,
+        market: 'from_token'
     }));
 }
 
-function mapSpotifySearchResult(res: any) {
-    return res;
+function mapToSpotifyTracks(res: any): SpotifyTrack[] {
+    let tracks: SpotifyTrack[] = [];
+    if (res && res.tracks && res.tracks.items && res.tracks.items.length > 0) {
+        res.tracks.items.forEach((track: any) => {
+            const imageIndex: number = track.album.images.length > 2 ? track.album.images.length - 2 : track.album.images.length -1;
+            tracks.push({
+                name: track.name,
+                popularity: track.popularity,
+                id: track.id,
+                duration_ms: track.duration_ms,
+                artist: track.artists[0].name,
+                image: track.album.images[imageIndex].url
+            })
+        });
+    }
+
+    return tracks;
 }
