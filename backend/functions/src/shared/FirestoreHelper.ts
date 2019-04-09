@@ -95,6 +95,16 @@ export class FireStoreHelper {
       });
   }
 
+  updateTokens(
+    oldAccessToken: string,
+    newAccessToken: string,
+    refreshToken: string,
+    validUntil: number
+  ) {
+    console.log("Would now update this");
+    // TODO: Update all Events with accessToken === oldAccessToken
+  }
+
   private getSongDocument(songId?: string): DocumentReference {
     const collection: CollectionReference = this.firestore.collection("Songs");
 
