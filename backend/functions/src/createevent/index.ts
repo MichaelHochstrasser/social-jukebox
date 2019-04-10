@@ -8,10 +8,11 @@ import { HTTP_METHODS } from "../model/CorsConfig";
 const firestoreHelper = new FireStoreHelper();
 
 export default functions.https.onRequest((request, response) => {
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   if (request.method === "OPTIONS") {
-    corsEnabledFunctionAuth(request, response, {
-      methods: [HTTP_METHODS.POST]
-    });
     return;
   }
 
@@ -29,7 +30,7 @@ export default functions.https.onRequest((request, response) => {
   return firestoreHelper
     .createOrUpdateEvent(new Event(request.body[nameAttribute]))
     .then((event: Event | void) => {
-      if(event) {
+      if (event) {
         response.status(200).send(event);
       } else {
         throw Error("Could not persist event");
