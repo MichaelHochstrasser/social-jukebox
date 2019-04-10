@@ -12,10 +12,11 @@ const fireStoreHelper = new FireStoreHelper();
 
 //test: GET https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken&scope=user-read-private%20playlist-modify-public%20playlist-modify-private&state=lfBoWpMRpm19kDTZp7P1
 export default functions.https.onRequest((request, response) => {
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   if (request.method === "OPTIONS") {
-    corsEnabledFunctionAuth(request, response, {
-      methods: [HTTP_METHODS.POST]
-    });
     return;
   }
 
@@ -54,13 +55,12 @@ export default functions.https.onRequest((request, response) => {
     const accessToken = jsonBody["access_token"];
     const refreshToken = jsonBody["refresh_token"];
     const expiresIn = jsonBody["expires_in"];
+    const validUntil = Date.now() + expiresIn * 1000;
     console.log("new refresh token: ", refreshToken);
     console.log(`expires in ${expiresIn} seconds`);
     const eventId = query["state"];
     console.log(accessToken);
     if (accessToken && accessToken.length > 0) {
-      console.log("got a new access token from spotify");
-      console.log("add the accessToken to the event with id", query["state"]);
 
       fireStoreHelper
         .getEvent(eventId)
@@ -73,6 +73,8 @@ export default functions.https.onRequest((request, response) => {
           }
           console.log(`event "${event.name}" loaded`);
           event.spotifyToken = accessToken;
+          event.refreshToken = refreshToken;
+          event.validUntil = validUntil;
           fireStoreHelper
             .createOrUpdateEvent(event)
             .then((updatedEvent: Event | void) => {
@@ -83,7 +85,7 @@ export default functions.https.onRequest((request, response) => {
                 return;
               }
               console.log(`event "${updatedEvent.name}" updated`);
-              response.redirect(`http://localhost:3000/event/${eventId}`);
+              response.redirect(`http://localhost:3000/event/${eventId}/setting`);
               return;
             })
             .catch((updateEventErr: Error) => {

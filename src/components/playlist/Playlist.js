@@ -1,21 +1,21 @@
 import React from 'react';
-import {Grid, Button, Modal, Table, Header} from 'semantic-ui-react'
+import {Grid, Button, Modal, Table, Header, Message} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import {SearchSongs} from "../search/SearchSongs";
 
 export default (props) => {
     let playlistItems = props.songs.length > 0
-        ? props.songs.map(song => <PlaylistItem key={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
-        : <Table.Row key={'emptyList'}><Table.Cell><Header as='h2'>Duuude, what a lame party… Add some songs!</Header></Table.Cell></Table.Row>;
+        ? props.songs.map(song => <PlaylistItem key={song.songId} image={song.image} songId={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
+        : <Table.Row key={'emptyList'}><Table.Cell><Message color='orange'>Duuude, what a lame party… Add some songs!</Message></Table.Cell></Table.Row>;
 
     return <Grid className="App" columns={1}>
             <Grid.Row>
                 <Grid.Column textAlign='right'>
                     <Modal open={props.isModalOpen} trigger={ <Button onClick={props.openModal} color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
-                        <Modal.Header>Search for a song to add</Modal.Header>
+                        <Modal.Header>Search for a song to add. Please do not type that fast ... :)</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
-                                <SearchSongs closeModal={props.closeModal}/>
+                                <SearchSongs eventId={props.eventId} closeModal={props.closeModal}/>
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>

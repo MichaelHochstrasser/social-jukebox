@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {Link, Redirect} from "react-router-dom";
-import {Button, Container, Grid, Header, Input} from "semantic-ui-react";
+import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react";
 import {Image} from "semantic-ui-react";
 import './Home.css';
+import classNames from 'classnames';
 
 export class Home extends Component {
 
@@ -10,14 +11,18 @@ export class Home extends Component {
         super(props);
         this.state = {
             redirect: false,
-            eventName: ''
+            eventName: '',
+            showError: false,
+            disabledClasses: classNames({disabled: false})
         };
     }
 
     createEvent() {
+        this.setState({disabledClasses: classNames({loading: true, disabled: true})});
+
         const axios = require('axios');
 
-        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
         const body = {
             name: this.state.eventName,
         };
@@ -26,11 +31,22 @@ export class Home extends Component {
         };
 
         axios.post(url, body, header)
-            .then(function (response) {
+            .then((response) => {
                 console.log(response);
+                this.setState({
+                    redirect: true,
+                    target: `/event/${response.data.eventId}/setting`,
+                    showError: false,
+                    disabledClasses: classNames({disabled: false})
+                })
+
             })
-            .catch(function (error) {
+            .catch((error) => {
                 console.log(error);
+                this.setState({
+                    showError: true,
+                    disabledClasses: classNames({disabled: false})
+                })
             });
     };
 
@@ -60,15 +76,16 @@ export class Home extends Component {
                 <Grid>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
-                            <Header as='h1'>Social Jukebox</Header>
+                            <Header as='h1'>Social Jukebox: {this.state.message}</Header>
                             <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
                             {this.renderRedirect()}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
+                            { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
                             <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
-                            <Button size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
+                            <Button className={this.state.disabledClasses} id='btnCreateEvent' size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
@@ -80,5 +97,13 @@ export class Home extends Component {
                 </Grid>
             </div>
         </Container>
+    }
+}
+
+class ErrorMessage extends Component{
+    render() {
+        return (
+            <Message color='red'>{this.props.message}</Message>
+        )
     }
 }

@@ -1,22 +1,39 @@
 import React, { Component } from 'react';
 import {Button, Icon, Table, Header, Image, Message} from 'semantic-ui-react'
-import { axios } from 'axios'
+import axios from 'axios';
 
 class PlaylistItem extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: 'frontendTest1',         //ToDo: Add sessionId here
+            sessionId: 1,         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
     }
 
-    handleVote(vote) {
-        const axios = require('axios');
+    componentDidMount() {
+        //ToDo: Remove Random sessionId
+        this.timerID = setInterval(
+            () => this.randomSession(),
+            1000
+        );
+    }
 
-        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/vote';
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    randomSession() {
+        const min = 1;
+        const max = 1000;
+        const rand = Math.round(min + Math.random() * (max - min));
+        this.setState({ sessionId: rand });
+    }
+
+    handleVote(vote) {
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
             songId: this.props.songId,
             eventId: this.props.eventId,
@@ -28,11 +45,15 @@ class PlaylistItem extends Component {
         };
 
         axios.post(url, body, header)
-        .then(function (response) {
+        .then((response) => {
             console.log(response);
+            const event = response.data;
+            this.setState({showError: false});
+            return;
         })
-        .catch(function (error) {
+        .catch((error) => {
             console.log(error);
+            this.setState({showError: true});
         });
     };
 
@@ -40,7 +61,7 @@ class PlaylistItem extends Component {
         return <Table.Row>
                 <Table.Cell>
                     <Header as='h4' image>
-                        <Image src={process.env.PUBLIC_URL + '/images/song2.jpg'} rounded size='mini' />
+                        <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
                             {this.props.songtitle}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
@@ -48,11 +69,11 @@ class PlaylistItem extends Component {
                     </Header>
                 </Table.Cell>
                 <Table.Cell textAlign='right'>
-                    { this.state.showResults ? <ErrorMessage /> : null }
+                    { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
+                        <Button basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
-                        <Button icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
+                        <Button basic icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>
@@ -62,7 +83,7 @@ class PlaylistItem extends Component {
 class ErrorMessage extends Component{
     render() {
         return (
-            <Message color='green'>Success</Message>
+            <Message color='red'>{this.props.message}</Message>
         )
     }
 }

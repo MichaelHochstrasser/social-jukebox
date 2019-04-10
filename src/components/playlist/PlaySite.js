@@ -28,13 +28,19 @@ export class PlaySite extends Component {
         this.setState({isModalOpen: false});
     }
 
-    componentDidMount() {
+    updatePlaylist() {
         this.updateSongs();
+    }
+
+    componentDidMount() {
+        this.updatePlaylist();
     }
 
     updateSongs() {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
+            .orderBy('voteCount', 'desc')
+            .orderBy('dateAdded', 'desc')
             .get()
             .then(querySnapshot => {
                 let songs = [];
@@ -52,7 +58,7 @@ export class PlaySite extends Component {
             <MenuBasic eventId={eventId} />
             <Container>
                 <NowPlaying eventId={eventId} />
-                <Playlist closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
+                <Playlist eventId={this.props.match.params.id} closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} updatePlaylist={this.updatePlaylist()} />
             </Container>
         </div>
     }

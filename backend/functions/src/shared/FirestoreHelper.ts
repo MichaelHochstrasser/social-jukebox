@@ -5,7 +5,10 @@ import {
   CollectionReference,
   DocumentReference,
   WriteResult,
-  DocumentSnapshot
+  DocumentSnapshot,
+  Query,
+  QuerySnapshot,
+  QueryDocumentSnapshot
 } from "@google-cloud/firestore";
 
 import { Event } from "../model/Event";
@@ -32,7 +35,11 @@ export class FireStoreHelper {
       if (event && event.playlistId) {
         resolve(event.playlistId);
       } else if (event.spotifyToken) {
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken);
+        const spotifyHelper = new SpotifyHelper(
+          event.spotifyToken,
+          event.refreshToken,
+          event.validUntil
+        );
 
         spotifyHelper
           .createPlaylist(event.name)
@@ -95,25 +102,105 @@ export class FireStoreHelper {
       });
   }
 
+  updateTokens(
+    oldAccessToken: string,
+    newAccessToken: string,
+    refreshToken: string,
+    validUntil: number
+  ): Promise<void> {
+    console.log("We will now update tokens of Events!");
+
+    const queryRef: Query = this.firestore
+      .collection("Events")
+      .where("spotifyToken", "==", oldAccessToken);
+
+    return queryRef
+      .get()
+      .then((result: QuerySnapshot) => {
+        console.log("Attempting to update these Events", result.docs);
+        if (result && result.docs) {
+          return Promise.all(
+            result.docs.map((doc: QueryDocumentSnapshot) => {
+              return this.createOrUpdateEvent({
+                ...doc.data,
+                refreshToken,
+                spotifyToken: newAccessToken,
+                validUntil
+              } as Event)
+                .then(() => {
+                  console.log("Successfully updated");
+                  return Promise.resolve();
+                })
+                .catch(updateError => {
+                  console.error(`Error while updating token of Event`, {
+                    err: updateError,
+                    data: doc.data
+                  });
+                  throw updateError;
+                });
+            })
+          )
+            .then(() => Promise.resolve())
+            .catch(updateAllError => {
+              throw updateAllError;
+            });
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .catch((err: Error) => {
+        console.log(err.message);
+        throw err;
+      });
+  }
+
   private getSongDocument(songId?: string): DocumentReference {
     const collection: CollectionReference = this.firestore.collection("Songs");
 
     return songId ? collection.doc(songId) : collection.doc();
   }
 
-  addOrUpdateSong(song: Song): Promise<Song | void> {
+  addOrUpdateSong(song: Song, spotifyToken?: string): Promise<Song | void> {
     const docRef: DocumentReference = this.getSongDocument(song.songId);
 
-    return docRef
-      .set({ ...song })
-      .then((result: WriteResult) => {
-        return {
-          ...song,
-          songId: docRef.id
-        } as Song;
+    return new Promise<void>((resolve, reject) => {
+      if (song && song.songId) {
+        // If the song is not new, we don't need to add it to the playlist.
+        resolve();
+      } else if (song && !song.songId && song.playlistId && spotifyToken) {
+        const spotifyHelper = new SpotifyHelper(spotifyToken);
+
+        spotifyHelper
+          .addSongToPlaylist(song.playlistId, song.songId)
+          .then(success => {
+            if (success) {
+              resolve();
+            } else {
+              reject(new Error("Could not add Song to Spotify Playlist!"));
+            }
+          })
+          .catch(err => {
+            throw err;
+          });
+      } else {
+        reject(new Error("Playlist ID or Spotifytoken not available!"));
+      }
+    })
+      .then(() => {
+        return docRef
+          .set({ ...song })
+          .then((result: WriteResult) => {
+            return {
+              ...song,
+              songId: docRef.id
+            } as Song;
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
-      .catch(err => {
-        console.log(err);
+      .catch(spotifyAddError => {
+        throw spotifyAddError;
       });
   }
 
