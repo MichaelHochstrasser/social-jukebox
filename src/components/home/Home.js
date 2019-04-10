@@ -3,6 +3,7 @@ import {Link, Redirect} from "react-router-dom";
 import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react";
 import {Image} from "semantic-ui-react";
 import './Home.css';
+import classNames from 'classnames';
 
 export class Home extends Component {
 
@@ -11,11 +12,14 @@ export class Home extends Component {
         this.state = {
             redirect: false,
             eventName: '',
-            showError: false
+            showError: false,
+            disabledClasses: classNames({disabled: false})
         };
     }
 
     createEvent() {
+        this.setState({disabledClasses: classNames({loading: true, disabled: true})});
+
         const axios = require('axios');
 
         const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
@@ -32,14 +36,16 @@ export class Home extends Component {
                 this.setState({
                     redirect: true,
                     target: `/event/${response.data.eventId}/setting`,
-                    showError: false
+                    showError: false,
+                    disabledClasses: classNames({disabled: false})
                 })
 
             })
             .catch((error) => {
                 console.log(error);
                 this.setState({
-                  showError: true
+                    showError: true,
+                    disabledClasses: classNames({disabled: false})
                 })
             });
     };
@@ -79,7 +85,7 @@ export class Home extends Component {
                         <Grid.Column textAlign='center'>
                             { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
                             <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
-                            <Button size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
+                            <Button className={this.state.disabledClasses} id='btnCreateEvent' size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
