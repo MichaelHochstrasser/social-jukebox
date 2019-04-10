@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import './SearchSong.css';
 import './circle.css';
 
-const songs = [
+let songs = [
     {
         "title": "Gimme! Gimme! Gimme! (A Man After Midnight)",
         "popularity": 73,
@@ -228,9 +228,11 @@ export class SearchSongs extends Component {
             'Content-Type': 'application/json'
         };
 
+        let that = this;
         axios.get(url, header)
             .then(function (response) {
-                console.log(response);
+                console.log(response.data);
+                songs = response.data;
             })
             .catch(function (error) {
                 console.log(error);

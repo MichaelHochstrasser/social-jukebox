@@ -61,7 +61,7 @@ class PlaylistItem extends Component {
         return <Table.Row>
                 <Table.Cell>
                     <Header as='h4' image>
-                        <Image src={process.env.PUBLIC_URL + '/images/song2.jpg'} rounded size='mini' />
+                        <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
                             {this.props.songtitle}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
