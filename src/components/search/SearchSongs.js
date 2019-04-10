@@ -201,7 +201,8 @@ resultRenderer.propTypes = {
     title: PropTypes.string,
     artist: PropTypes.string,
     image: PropTypes.string,
-    duration_ms: PropTypes.number
+    duration_ms: PropTypes.number,
+    eventId: PropTypes.string
 }
 
 export class SearchSongs extends Component {
@@ -212,12 +213,54 @@ export class SearchSongs extends Component {
     resetComponent = () => this.setState({isLoading: false, results: [], value: ''})
 
     handleResultSelect = (e, {result}) => {
-        console.log(result);
+        this.addSong(result);
         this.setState({value: result.artist + ' - ' + result.title});
         this.props.closeModal();
     }
 
+    searchSong = (query) => {
+        console.log(query);
+        const axios = require('axios');
+
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/search?term=' + query + '&eventId=' + this.props.eventId;
+
+        const header = {
+            'Content-Type': 'application/json'
+        };
+
+        axios.get(url, header)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    addSong = (song) => {
+        console.log(this.props.eventId);
+        const axios = require('axios');
+
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/addSong';
+        const body = {
+            eventId: this.props.eventId,
+            songId: song.id,
+        };
+        const header = {
+            'Content-Type': 'application/json'
+        };
+
+        axios.post(url, body, header)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     handleSearchChange = (e, {value}) => {
+        this.searchSong(value);
         this.setState({isLoading: true, value})
 
         setTimeout(() => {
