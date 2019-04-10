@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Container} from "semantic-ui-react";
-import {Playheader} from "./Playheader";
+import {NowPlaying} from "./NowPlaying";
 import Playlist from "./Playlist";
 import firebase from "../firebase/Firebase";
 import {MenuBasic} from "../menu/MenuBasic";
@@ -47,10 +47,11 @@ export class PlaySite extends Component {
     }
 
     render() {
+        let eventId = this.props.match.params.id;
         return <div>
-            <MenuBasic eventId={this.props.match.params.id}/>
+            <MenuBasic eventId />
             <Container>
-                <Playheader/>
+                <NowPlaying eventId />
                 <Playlist closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
             </Container>
         </div>
