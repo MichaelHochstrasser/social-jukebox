@@ -85,7 +85,7 @@ export default functions.https.onRequest((request, response) => {
                 return;
               }
               console.log(`event "${updatedEvent.name}" updated`);
-              response.redirect(`http://localhost:3000/event/${eventId}`);
+              response.redirect(`http://localhost:3000/event/${eventId}/setting`);
               return;
             })
             .catch((updateEventErr: Error) => {
