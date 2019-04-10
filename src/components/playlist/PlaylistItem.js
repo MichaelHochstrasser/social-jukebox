@@ -33,7 +33,7 @@ class PlaylistItem extends Component {
     }
 
     handleVote(vote) {
-        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/vote';
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
             songId: this.props.songId,
             eventId: this.props.eventId,

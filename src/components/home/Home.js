@@ -22,7 +22,7 @@ export class Home extends Component {
 
         const axios = require('axios');
 
-        const url = 'https://us-central1-social-jukebox-zuehlke.cloudfunctions.net/createEvent';
+        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
         const body = {
             name: this.state.eventName,
         };
