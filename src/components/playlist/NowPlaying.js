@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {Container, Grid, Icon, Progress, Segment} from "semantic-ui-react";
 import firebase from "../firebase/Firebase";
 
@@ -6,45 +6,59 @@ export class NowPlaying extends Component {
 
     constructor(props) {
         super(props);
-        this.db = firebase.firestore().collection('test');
-        const song = {title: String, artist: String, time: String};
+        this.spotifyWebPlaybackSDKReady = false;
+
+        //this.setUpSpotifyPlayer = this.setUpSpotifyPlayer.bind(this);
         this.state = {
-            currentSong: {title: 'Hit me baby one more time', artist: 'Britney', time: '2:15'}
+            currentSong: {title: 'Hit me baby one more time', artist: 'Britney', time: '2:15'},
+            paused: true
         };
     }
 
     componentWillMount() {
-        window.onSpotifyWebPlaybackSDKReady = () => {
-            // You can now initialize Spotify.Player and use the SDK
-            const token = 'BQAwXGNVd-Ql05HwmhPgOFMrZc3FHvWTVNBp5RURcc1fAZg31_U7J2kyNscOveoV1v3r2KTlWeEno0P3OVag7vMyM2o5VFLzsdx5NsfTOsEZcm72q7sBtJQ2-6cPM0uXcQ9TqkrKa9_sV2kkgmbTmauctCIQ4gVBsBQ';
-            const player = new window.Spotify.Player({
-                name: 'Social Jukebox',
-                getOAuthToken: cb => { cb(token); }
-            });
+        window.onSpotifyWebPlaybackSDKReady = () => this.spotifyWebPlaybackSDKReady = true;
 
-            // Error handling
-            player.addListener('initialization_error', ({ message }) => { console.error(message); });
-            player.addListener('authentication_error', ({ message }) => { console.error(message); });
-            player.addListener('account_error', ({ message }) => { console.error(message); });
-            player.addListener('playback_error', ({ message }) => { console.error(message); });
+        let eventDocRef = firebase.firestore().collection('Events').doc(this.props.eventId);
+        eventDocRef.get()
+            .then(doc => {
+                let token = doc.data().spotifyToken;
+                if (this.spotifyWebPlaybackSDKReady) {
+                    this.setUpSpotifyPlayer(token)
+                } else {
+                    window.onSpotifyWebPlaybackSDKReady = () => this.setUpSpotifyPlayer(token);
+                }
+            })
+            .catch(error => console.log("Error getting document: ", error));
+    }
 
-            // Playback status updates
-            player.addListener('player_state_changed', state => { console.log(state); });
+    setUpSpotifyPlayer(token) {
+        const player = new window.Spotify.Player({
+            name: 'Social Jukebox',
+            getOAuthToken: cb => {
+                cb(token);
+            }
+        });
 
-            // Ready
-            player.addListener('ready', ({ device_id }) => {
-                console.log('Ready with Device ID', device_id);
-            });
+        // Error handling
+        player.addListener('initialization_error', ({message}) => console.error(message));
+        player.addListener('authentication_error', ({message}) => console.error(message));
+        player.addListener('account_error', ({message}) => console.error(message));
+        player.addListener('playback_error', ({message}) => console.error(message));
 
-            // Not Ready
-            player.addListener('not_ready', ({ device_id }) => {
-                console.log('Device ID has gone offline', device_id);
-            });
+        // Playback status updates
+        player.addListener('player_state_changed', state => {
+            console.log(state);
+            this.setState({paused: state.paused})
+        });
 
-            // Connect to the player!
-            player.connect();
-            console.log('LOADED!');
-        };
+        // Ready
+        player.addListener('ready', ({device_id}) => console.log('Ready with Device ID', device_id));
+
+        // Not Ready
+        player.addListener('not_ready', ({device_id}) => console.log('Device ID has gone offline', device_id));
+
+        // Connect to the player!
+        player.connect();
     }
 
     render() {
@@ -54,7 +68,7 @@ export class NowPlaying extends Component {
                     <Container textAlign='center'>
                         <h2>{this.state.currentSong.title}</h2>
                         <p>{this.state.currentSong.artist}</p>
-                        <Icon name='play' />
+                        <Icon name={(this.state.paused) ? 'play' : 'pause'} />
                     </Container>
                 </Grid.Row>
                 <Grid.Row>

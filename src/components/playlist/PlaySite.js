@@ -49,9 +49,9 @@ export class PlaySite extends Component {
     render() {
         let eventId = this.props.match.params.id;
         return <div>
-            <MenuBasic eventId />
+            <MenuBasic eventId={eventId} />
             <Container>
-                <NowPlaying eventId />
+                <NowPlaying eventId={eventId} />
                 <Playlist closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} />
             </Container>
         </div>
