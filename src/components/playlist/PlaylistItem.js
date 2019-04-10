@@ -7,10 +7,29 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: 'frontendTest14',         //ToDo: Add sessionId here
+            sessionId: 1,         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
+    }
+
+    componentDidMount() {
+        //ToDo: Remove Random sessionId
+        this.timerID = setInterval(
+            () => this.randomSession(),
+            1000
+        );
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    randomSession() {
+        const min = 1;
+        const max = 1000;
+        const rand = Math.round(min + Math.random() * (max - min));
+        this.setState({ sessionId: rand });
     }
 
     handleVote(vote) {
@@ -52,9 +71,9 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
+                        <Button basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
-                        <Button icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
+                        <Button basic icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>
