@@ -5,7 +5,10 @@ import {
   CollectionReference,
   DocumentReference,
   WriteResult,
-  DocumentSnapshot
+  DocumentSnapshot,
+  Query,
+  QuerySnapshot,
+  QueryDocumentSnapshot
 } from "@google-cloud/firestore";
 
 import { Event } from "../model/Event";
@@ -32,7 +35,11 @@ export class FireStoreHelper {
       if (event && event.playlistId) {
         resolve(event.playlistId);
       } else if (event.spotifyToken) {
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken, event.refreshToken, event.validUntil);
+        const spotifyHelper = new SpotifyHelper(
+          event.spotifyToken,
+          event.refreshToken,
+          event.validUntil
+        );
 
         spotifyHelper
           .createPlaylist(event.name)
@@ -100,9 +107,51 @@ export class FireStoreHelper {
     newAccessToken: string,
     refreshToken: string,
     validUntil: number
-  ) {
-    console.log("Would now update this");
-    // TODO: Update all Events with accessToken === oldAccessToken
+  ): Promise<void> {
+    console.log("We will now update tokens of Events!");
+
+    const queryRef: Query = this.firestore
+      .collection("Events")
+      .where("spotifyToken", "==", oldAccessToken);
+
+    return queryRef
+      .get()
+      .then((result: QuerySnapshot) => {
+        console.log("Attempting to update these Events", result.docs);
+        if (result && result.docs) {
+          return Promise.all(
+            result.docs.map((doc: QueryDocumentSnapshot) => {
+              return this.createOrUpdateEvent({
+                ...doc.data,
+                refreshToken,
+                spotifyToken: newAccessToken,
+                validUntil
+              } as Event)
+                .then(() => {
+                  console.log("Successfully updated");
+                  return Promise.resolve();
+                })
+                .catch(updateError => {
+                  console.error(`Error while updating token of Event`, {
+                    err: updateError,
+                    data: doc.data
+                  });
+                  throw updateError;
+                });
+            })
+          )
+            .then(() => Promise.resolve())
+            .catch(updateAllError => {
+              throw updateAllError;
+            });
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .catch((err: Error) => {
+        console.log(err.message);
+        throw err;
+      });
   }
 
   private getSongDocument(songId?: string): DocumentReference {

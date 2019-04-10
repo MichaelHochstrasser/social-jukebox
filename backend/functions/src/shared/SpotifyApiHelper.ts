@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { SpotifyTrack } from "../model/SpotifyTrack";
 import { stringify } from "querystring";
@@ -11,7 +11,7 @@ import {
   createSpotifyAPIUserMyPlaylistsURL
 } from "./constants";
 
-import {FireStoreHelper} from "./FirestoreHelper";
+import { FireStoreHelper } from "./FirestoreHelper";
 
 export function createHeader(
   token: string,
@@ -37,12 +37,16 @@ export function createHeader(
 }
 
 export class SpotifyHelper {
-  constructor(private accessToken?: string, private refreshToken?: string, private validUntil?: number) {}
+  constructor(
+    private accessToken?: string,
+    private refreshToken?: string,
+    private validUntil?: number
+  ) {}
 
   async getSongInfo(songId: string): Promise<SpotifyTrack | void> {
     if (this.accessToken) {
       await this.refreshAccessToken();
-    }else {
+    } else {
       throw new Error("Spotify token not set!");
     }
 
@@ -73,7 +77,7 @@ export class SpotifyHelper {
   async getUserId(): Promise<string> {
     if (this.accessToken) {
       await this.refreshAccessToken();
-    }else {
+    } else {
       throw new Error("Spotify token not set!");
     }
 
@@ -93,24 +97,27 @@ export class SpotifyHelper {
       });
   }
 
-  async checkSpotifyConnection(): Promise<boolean>{
+  async checkSpotifyConnection(): Promise<boolean> {
     if (!this.accessToken) {
       return false;
     }
     const requestUrl = createSpotifyAPIUserMyPlaylistsURL();
     let status = false;
-    await axios.get(requestUrl, createHeader(this.accessToken)).then(() => {
-      status = true;
-    }).catch(() => {
-      status = false;
-    });
+    await axios
+      .get(requestUrl, createHeader(this.accessToken))
+      .then(() => {
+        status = true;
+      })
+      .catch(() => {
+        status = false;
+      });
     return status;
   }
 
   async createPlaylist(name: string): Promise<string> {
     if (this.accessToken) {
       await this.refreshAccessToken();
-    }else {
+    } else {
       throw new Error("Spotify token not set!");
     }
 
@@ -151,14 +158,17 @@ export class SpotifyHelper {
       });
   }
 
-  async addSongToPlaylist(playlistId: string, songId: string): Promise<boolean> {
+  async addSongToPlaylist(
+    playlistId: string,
+    songId: string
+  ): Promise<boolean> {
     const addToPlaylistRequestUrl = createSpotifyAPIAddToPlaylistURL(
       playlistId
     );
 
     if (this.accessToken) {
       await this.refreshAccessToken();
-    }else {
+    } else {
       throw new Error("Spotify token not set!");
     }
 
@@ -184,10 +194,13 @@ export class SpotifyHelper {
 
   reorderSongsOnPlaylist() {}
 
-  async getSpotifySearchResult(searchTerm: string, searchType: string): Promise<AxiosResponse> {
+  async getSpotifySearchResult(
+    searchTerm: string,
+    searchType: string
+  ): Promise<AxiosResponse> {
     if (this.accessToken) {
       await this.refreshAccessToken();
-    }else {
+    } else {
       throw new Error("Spotify token not set!");
     }
 
@@ -201,14 +214,16 @@ export class SpotifyHelper {
     );
   }
 
-  async refreshAccessToken(force: boolean = false){
-    if (!this.refreshToken){
+  async refreshAccessToken(force: boolean = false) {
+    if (!this.refreshToken) {
       throw new Error("no refresh token to request new access token");
     }
-    if (force || this.hasAccessTokenExpired()){
+    if (force || this.hasAccessTokenExpired()) {
       const oldAccessToken = this.accessToken;
 
-      const authorizationString = Buffer.from("68fd4d58904748c7bc63c038fa3a5f01:4b10c006070340f09fac901f138b56ea").toString('base64');
+      const authorizationString = Buffer.from(
+        "68fd4d58904748c7bc63c038fa3a5f01:4b10c006070340f09fac901f138b56ea"
+      ).toString("base64");
       const postData = stringify({
         grant_type: "refresh_token",
         refresh_token: this.refreshToken
@@ -224,15 +239,25 @@ export class SpotifyHelper {
         data: postData,
         headers: header
       };
-      await axios.request(config)
+      await axios
+        .request(config)
         .then(response => {
-          if(response.data && response.data.access_token){
+          if (response.data && response.data.access_token) {
             const fireStoreHelper = new FireStoreHelper();
             this.accessToken = response.data.access_token;
             const expiresIn = response.data.expires_in;
             this.validUntil = Date.now() + expiresIn * 1000;
-            if(oldAccessToken && this.accessToken && this.refreshToken){
-              fireStoreHelper.updateTokens(oldAccessToken, this.accessToken, this.refreshToken, this.validUntil);
+            if (oldAccessToken && this.accessToken && this.refreshToken) {
+              fireStoreHelper
+                .updateTokens(
+                  oldAccessToken,
+                  this.accessToken,
+                  this.refreshToken,
+                  this.validUntil
+                )
+                .catch((updateError: Error) => {
+                  throw updateError;
+                });
             }
           }
         })
@@ -243,10 +268,10 @@ export class SpotifyHelper {
   }
 
   private hasAccessTokenExpired(): boolean {
-    if (!this.validUntil){
+    if (!this.validUntil) {
       return true;
     }
-    if (Date.now() > this.validUntil - 100000){
+    if (Date.now() > this.validUntil - 100000) {
       return true;
     }
     return false;
