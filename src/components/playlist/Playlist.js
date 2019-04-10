@@ -12,7 +12,7 @@ export default (props) => {
             <Grid.Row>
                 <Grid.Column textAlign='right'>
                     <Modal open={props.isModalOpen} trigger={ <Button onClick={props.openModal} color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
-                        <Modal.Header>Search for a song to add</Modal.Header>
+                        <Modal.Header>Search for a song to add. Please do not type that fast ... :)</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
                                 <SearchSongs eventId={props.eventId} closeModal={props.closeModal}/>
