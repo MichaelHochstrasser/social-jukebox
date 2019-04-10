@@ -17,10 +17,11 @@ export default functions.https.onRequest((request, response) => {
   const songIdAttr = "songId";
   const eventIdAttr = "eventId";
 
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   if (request.method === "OPTIONS") {
-    corsEnabledFunctionAuth(request, response, {
-      methods: [HTTP_METHODS.POST]
-    });
     return;
   }
 
@@ -37,7 +38,11 @@ export default functions.https.onRequest((request, response) => {
     .getEvent(request.body[eventIdAttr])
     .then((event: Event | void) => {
       if (event && event.eventId === request.body[eventIdAttr]) {
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken, event.refreshToken, event.validUntil);
+        const spotifyHelper = new SpotifyHelper(
+          event.spotifyToken,
+          event.refreshToken,
+          event.validUntil
+        );
         spotifyHelper
           .getSongInfo(request.body[songIdAttr])
           .then((result: SpotifyTrack | void) => {

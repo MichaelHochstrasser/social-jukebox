@@ -16,10 +16,11 @@ export default functions.https.onRequest((request, response) => {
   const voteAttr = "vote";
   const voterAttr = "sessionId";
 
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.POST]
+  });
+
   if (request.method === "OPTIONS") {
-    corsEnabledFunctionAuth(request, response, {
-      methods: [HTTP_METHODS.POST]
-    });
     return;
   }
 
