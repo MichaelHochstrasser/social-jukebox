@@ -7,7 +7,8 @@ import {
   createSpotifyAPITrackURL,
   createSpotifyAPICreatePlaylistURL,
   createSpotifyAPIUserProfileURL,
-  createSpotifyAPIAddToPlaylistURL
+  createSpotifyAPIAddToPlaylistURL,
+  createSpotifyAPIUserMyPlaylistsURL
 } from "./constants";
 
 import {FireStoreHelper} from "./FirestoreHelper";
@@ -38,86 +39,109 @@ export function createHeader(
 export class SpotifyHelper {
   constructor(private accessToken?: string, private refreshToken?: string, private validUntil?: number) {}
 
-  getSongInfo(songId: string): Promise<SpotifyTrack | void> {
-    const requestUrl = createSpotifyAPITrackURL(songId);
-
+  async getSongInfo(songId: string): Promise<SpotifyTrack | void> {
     if (this.accessToken) {
-      return axios
-        .get(requestUrl, createHeader(this.accessToken))
-        .then((response: any) => {
-          if (response.data) {
-            return {
-              id: response.data.id as string,
-              title: response.data.name as string,
-              duration_ms: response.data.duration_ms as number,
-              artist: response.data.artists
-                .map((artist: { name: string }) => artist.name)
-                .join(",") as string,
-              popularity: response.data.popularity as number,
-              image: response.data.album.images[0].url as string
-            } as SpotifyTrack;
-          } else {
-            throw new Error("No data returned!");
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
-    } else {
-      throw new Error("No spotify token!");
-    }
-  }
-
-  getUserId(): Promise<string> {
-    const requestUrl = createSpotifyAPIUserProfileURL();
-
-    if (this.accessToken) {
-      return axios
-        .get(requestUrl, createHeader(this.accessToken))
-        .then((response: any) => {
-          if (response.data) {
-            return response.data.id;
-          } else {
-            throw new Error("No data returned!");
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
-    } else {
+      await this.refreshAccessToken();
+    }else {
       throw new Error("Spotify token not set!");
     }
+
+    const requestUrl = createSpotifyAPITrackURL(songId);
+    return axios
+      .get(requestUrl, createHeader(this.accessToken))
+      .then((response: any) => {
+        if (response.data) {
+          return {
+            id: response.data.id as string,
+            title: response.data.name as string,
+            duration_ms: response.data.duration_ms as number,
+            artist: response.data.artists
+              .map((artist: { name: string }) => artist.name)
+              .join(",") as string,
+            popularity: response.data.popularity as number,
+            image: response.data.album.images[0].url as string
+          } as SpotifyTrack;
+        } else {
+          throw new Error("No data returned!");
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
   }
 
-  createPlaylist(name: string): Promise<string> {
+  async getUserId(): Promise<string> {
+    if (this.accessToken) {
+      await this.refreshAccessToken();
+    }else {
+      throw new Error("Spotify token not set!");
+    }
+
+    const requestUrl = createSpotifyAPIUserProfileURL();
+
+    return axios
+      .get(requestUrl, createHeader(this.accessToken))
+      .then((response: any) => {
+        if (response.data) {
+          return response.data.id;
+        } else {
+          throw new Error("No data returned!");
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
+  async checkSpotifyConnection(): Promise<boolean>{
+    if (!this.accessToken) {
+      return false;
+    }
+    const requestUrl = createSpotifyAPIUserMyPlaylistsURL();
+    let status = false;
+    await axios.get(requestUrl, createHeader(this.accessToken)).then(() => {
+      status = true;
+    }).catch(() => {
+      status = false;
+    });
+    return status;
+  }
+
+  async createPlaylist(name: string): Promise<string> {
+    if (this.accessToken) {
+      await this.refreshAccessToken();
+    }else {
+      throw new Error("Spotify token not set!");
+    }
+
     return this.getUserId()
       .then(userId => {
         if (userId) {
           const playlistRequestUrl = createSpotifyAPICreatePlaylistURL(userId);
 
-          if (this.accessToken) {
-            return axios
-              .post(
-                playlistRequestUrl,
-                {
-                  name,
-                  public: true
-                },
-                createHeader(this.accessToken, "application/json")
-              )
-              .then((response: any) => {
-                if (response.data && response.data.id) {
-                  return response.data.id;
-                } else {
-                  throw new Error("Failed to create Playlist!");
-                }
-              })
-              .catch(err => {
-                throw err;
-              });
-          } else {
+          if (!this.accessToken) {
             throw new Error("Spotify token not set!");
           }
+
+          return axios
+            .post(
+              playlistRequestUrl,
+              {
+                name,
+                public: true
+              },
+              createHeader(this.accessToken, "application/json")
+            )
+            .then((response: any) => {
+              if (response.data && response.data.id) {
+                return response.data.id;
+              } else {
+                throw new Error("Failed to create Playlist!");
+              }
+            })
+            .catch(err => {
+              throw err;
+            });
         } else {
           throw new Error("Missing User-ID!");
         }
@@ -127,43 +151,45 @@ export class SpotifyHelper {
       });
   }
 
-  addSongToPlaylist(playlistId: string, songId: string): Promise<boolean> {
+  async addSongToPlaylist(playlistId: string, songId: string): Promise<boolean> {
     const addToPlaylistRequestUrl = createSpotifyAPIAddToPlaylistURL(
       playlistId
     );
 
     if (this.accessToken) {
-      return axios
-        .post(
-          addToPlaylistRequestUrl,
-          {
-            uris: [`spotify:track:${songId}`]
-          },
-          createHeader(this.accessToken, "application/json")
-        )
-        .then((response: any) => {
-          if (response.status === 201 || response.status === 200) {
-            return true;
-          } else {
-            throw new Error("Failed to Add Song to Playlist!");
-          }
-        })
-        .catch(err => {
-          throw err;
-        });
-    } else {
+      await this.refreshAccessToken();
+    }else {
       throw new Error("Spotify token not set!");
     }
+
+    return axios
+      .post(
+        addToPlaylistRequestUrl,
+        {
+          uris: [`spotify:track:${songId}`]
+        },
+        createHeader(this.accessToken, "application/json")
+      )
+      .then((response: any) => {
+        if (response.status === 201 || response.status === 200) {
+          return true;
+        } else {
+          throw new Error("Failed to Add Song to Playlist!");
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
   }
 
   reorderSongsOnPlaylist() {}
 
   async getSpotifySearchResult(searchTerm: string, searchType: string): Promise<AxiosResponse> {
-    if (!this.accessToken) {
-      throw new Error("no access token");
+    if (this.accessToken) {
+      await this.refreshAccessToken();
+    }else {
+      throw new Error("Spotify token not set!");
     }
-
-    await this.refreshAccessToken();
 
     return axios.get(
       "https://api.spotify.com/v1/search",
