@@ -15,10 +15,11 @@ export default functions.https.onRequest((request, response) => {
   const searchTermParam: string = "term";
   const searchTypeParam: string = "type";
 
+  corsEnabledFunctionAuth(request, response, {
+    methods: [HTTP_METHODS.GET]
+  });
+
   if (request.method === "OPTIONS") {
-    corsEnabledFunctionAuth(request, response, {
-      methods: [HTTP_METHODS.GET]
-    });
     return;
   }
 
@@ -43,7 +44,11 @@ export default functions.https.onRequest((request, response) => {
           response.status(400).send("Spotify Token Required!");
           return;
         }
-        const spotifyHelper = new SpotifyHelper(event.spotifyToken, event.refreshToken, event.validUntil);
+        const spotifyHelper = new SpotifyHelper(
+          event.spotifyToken,
+          event.refreshToken,
+          event.validUntil
+        );
         spotifyHelper
           .getSpotifySearchResult(searchTerm, searchType)
           .then((res: any) =>
