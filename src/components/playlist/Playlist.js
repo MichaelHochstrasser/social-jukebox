@@ -5,14 +5,14 @@ import {SearchSongs} from "../search/SearchSongs";
 
 export default (props) => {
     let playlistItems = props.songs.length > 0
-        ? props.songs.map(song => <PlaylistItem key={song.songId} songId={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
+        ? props.songs.map(song => <PlaylistItem key={song.songId} image={song.image} songId={song.songId} eventId={song.eventId} votes={song.voteCount} songtitle={song.title} artist={song.artist}></PlaylistItem>)
         : <Table.Row key={'emptyList'}><Table.Cell><Message color='orange'>Duuude, what a lame party… Add some songs!</Message></Table.Cell></Table.Row>;
 
     return <Grid className="App" columns={1}>
             <Grid.Row>
                 <Grid.Column textAlign='right'>
                     <Modal open={props.isModalOpen} trigger={ <Button onClick={props.openModal} color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
-                        <Modal.Header>Search for a song to add</Modal.Header>
+                        <Modal.Header>Search for a song to add. Please do not type that fast ... :)</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
                                 <SearchSongs eventId={props.eventId} closeModal={props.closeModal}/>
