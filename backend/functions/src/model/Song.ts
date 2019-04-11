@@ -1,6 +1,8 @@
 import { Voter } from "./Voter";
 
 import { SpotifyTrack } from "./SpotifyTrack";
+import * as admin from "firebase-admin";
+import Timestamp = admin.firestore.Timestamp;
 
 export class Song implements SpotifyTrack {
   public get id() {
@@ -16,7 +18,7 @@ export class Song implements SpotifyTrack {
     public duration_ms: number = 0,
     public popularity: number = 0,
     public image: string = "",
-    public dateAdded: Date = new Date(),
+    public dateAdded: Timestamp = Timestamp.now(),
     public isPlaying: boolean = false,
     public voters: Voter[] = [],
     public voteCount: number = 0

@@ -43,7 +43,7 @@ export class PlaySite extends Component {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
             .orderBy('voteCount', 'desc')
-            .orderBy('dateAdded', 'desc')
+            .orderBy('dateAdded', 'asc')
             .get()
             .then(querySnapshot => {
                 let songs = [];
