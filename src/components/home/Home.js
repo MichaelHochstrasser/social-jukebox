@@ -4,6 +4,7 @@ import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react
 import {Image} from "semantic-ui-react";
 import './Home.css';
 import classNames from 'classnames';
+import { BACKEND_BASE_URL } from '../../shared/constants';
 
 export class Home extends Component {
 
@@ -57,7 +58,7 @@ export class Home extends Component {
 
         const axios = require('axios');
 
-        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
+        const url = `${BACKEND_BASE_URL}/createEvent`;
         const body = {
             name: this.state.eventName,
             userId: localStorage.getItem('userId')

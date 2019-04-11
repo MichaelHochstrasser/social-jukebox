@@ -4,6 +4,7 @@ import {Button, Container, Grid, Header, Message} from "semantic-ui-react";
 import {MenuBasic} from "../menu/MenuBasic";
 import QRCode from 'qrcode-react';
 import firebase from "../firebase/Firebase";
+import { FRONTEND_BASE_URL, BACKEND_BASE_URL } from '../../shared/constants';
 
 export class SettingEvent extends Component {
 
@@ -64,9 +65,9 @@ export class SettingEvent extends Component {
                             </Grid.Row>
                             <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
                             <Grid.Row><Grid.Column textAlign='center'><Header as='h2'>Share your event with friends</Header></Grid.Column></Grid.Row>
-                            <Grid.Row><Grid.Column textAlign='center'><a href=''>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
+                            <Grid.Row><Grid.Column textAlign='center'><a href={`${FRONTEND_BASE_URL}/event/${this.props.match.params.id}`}>{FRONTEND_BASE_URL}/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
                             <Grid.Row><Grid.Column textAlign='center'><QRCode
-                                value={`https://jukebox.dj/event/${this.props.match.params.id}`}
+                                value={`${FRONTEND_BASE_URL}/event/${this.props.match.params.id}`}
                                 size={256}
                                 logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Love_Heart_symbol.svg/2000px-Love_Heart_symbol.svg.png"
                                 bgColor="#2ED665"
@@ -93,11 +94,11 @@ export class SettingEvent extends Component {
 class ConnectComp extends Component{
 
     connectSpotify = () => {
-        window.location.replace(`https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken&scope=user-read-birthdate%20user-read-email%20streaming%20user-read-private%20playlist-modify-public%20playlist-modify-private&state=${this.props.eventId}`);
+        window.location.replace(`https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=${BACKEND_BASE_URL}/getSpotifyAccessToken&scope=user-read-birthdate%20user-read-email%20streaming%20user-read-private%20playlist-modify-public%20playlist-modify-private&state=${this.props.eventId}`);
     };
 
     render() {
-        if (this.props.event.refreshToken === '' || this.props.event.refreshToken === null) {
+        if (!this.props.event.refreshToken) {
             return (
                 <Grid.Row>
                     <Grid.Column textAlign='center'>
