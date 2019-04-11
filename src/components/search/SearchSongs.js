@@ -4,6 +4,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import './SearchSong.css';
 import './circle.css';
+import { BACKEND_BASE_URL } from '../../shared/constants';
 
 let songs = [];
 let loadedSongs = [];
@@ -70,7 +71,7 @@ export class SearchSongs extends Component {
     searchSong = (query) => {
         if (query) {
             const axios = require('axios');
-            const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/search?term=' + query + '&eventId=' + this.props.eventId;
+            const url = `${BACKEND_BASE_URL}/search?term=` + query + '&eventId=' + this.props.eventId;
             const header = {
                 'Content-Type': 'application/json'
             };
@@ -83,7 +84,7 @@ export class SearchSongs extends Component {
 
     addSong = (song) => {
         const axios = require('axios');
-        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/addSong';
+        const url = `${BACKEND_BASE_URL}/addSong`;
         const body = {
             eventId: this.props.eventId,
             songId: song.id,
