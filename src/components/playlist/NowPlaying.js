@@ -80,6 +80,7 @@ export class NowPlaying extends Component {
     }
 
     render() {
+        const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : '';
         const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : '';
         const trackProgress = (this.state.trackPosition / this.state.trackDuration) * 100;
         return <Segment>
@@ -88,7 +89,8 @@ export class NowPlaying extends Component {
                     <Container textAlign='center'>
                         <h2>{this.state.currentTrack.name}</h2>
                         <p>{artistName}</p>
-                        <Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' />
+                        <div><img src={image}/></div>
+                        <div><Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' /></div>
                     </Container>
                 </Grid.Row>
                 <Grid.Row>
