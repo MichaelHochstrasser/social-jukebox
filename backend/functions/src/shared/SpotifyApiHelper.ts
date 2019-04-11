@@ -4,11 +4,12 @@ import { SpotifyTrack } from "../model/SpotifyTrack";
 import { stringify } from "querystring";
 
 import {
-  createSpotifyAPITrackURL,
-  createSpotifyAPICreatePlaylistURL,
-  createSpotifyAPIUserProfileURL,
-  createSpotifyAPIAddToPlaylistURL,
-  createSpotifyAPIUserMyPlaylistsURL
+    createSpotifyAPITrackURL,
+    createSpotifyAPICreatePlaylistURL,
+    createSpotifyAPIUserProfileURL,
+    createSpotifyAPIReorderPlaylistURL,
+    createSpotifyAPIAddToPlaylistURL,
+    createSpotifyAPIUserMyPlaylistsURL
 } from "./constants";
 
 import { FireStoreHelper } from "./FirestoreHelper";
@@ -192,17 +193,35 @@ export class SpotifyHelper {
       });
   }
 
-  reorderSongsOnPlaylist() {}
-
-  async getSpotifySearchResult(
-    searchTerm: string,
-    searchType: string
-  ): Promise<AxiosResponse> {
-    if (this.accessToken) {
-      await this.refreshAccessToken();
-    } else {
-      throw new Error("Spotify token not set!");
+    reorderSongsOnPlaylist(playlistId: string, rangeStart: number, insertBefore: number, rangeLength: number = 1) {
+        if (this.accessToken) {
+            return axios
+                .put(createSpotifyAPIReorderPlaylistURL(playlistId), {
+                    range_start: rangeStart,
+                    range_length: rangeLength,
+                    insert_before: insertBefore
+                }, createHeader(this.accessToken))
+                .then((response: any) => {
+                    if (response.data) {
+                        return response.data;
+                    } else {
+                        throw new Error("No data returned!");
+                    }
+                })
+                .catch(err => {
+                    throw err;
+                });
+        } else {
+            throw new Error("Spotify token not set!");
+        }
     }
+
+    async getSpotifySearchResult(searchTerm: string, searchType: string): Promise<AxiosResponse> {
+        if (!this.accessToken) {
+            throw new Error("no access token");
+        }
+
+        await this.refreshAccessToken();
 
     return axios.get(
       "https://api.spotify.com/v1/search",

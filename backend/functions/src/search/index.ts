@@ -1,5 +1,4 @@
 import * as functions from "firebase-functions";
-import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { Event } from "../model/Event";
 import { SearchType } from "../model/SearchType";
@@ -7,6 +6,7 @@ import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 import { SpotifyTrack } from "../model/SpotifyTrack";
 import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
 import { HTTP_METHODS } from "../model/CorsConfig";
+import { checkParamsExist } from "../shared/PropertyChecker";
 
 const firestoreHelper = new FireStoreHelper();
 
