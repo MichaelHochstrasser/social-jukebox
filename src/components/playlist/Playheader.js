@@ -14,13 +14,13 @@ export class Playheader extends Component {
 
     render() {
         return <Segment>
-            <Grid className="App" columns={1}>
+            <Grid>
                 <Grid.Row>
-                    <Container textAlign='center'>
+                    <Grid.Column textAlign='center'>
                         <h2>{this.state.currentSong.title}</h2>
                         <p>{this.state.currentSong.artist}</p>
                         <Icon name='play' />
-                    </Container>
+                    </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
