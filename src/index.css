@@ -13,7 +13,7 @@ body {
   box-shadow: 0 0 0 1px #00976e inset !important;
 }
 
-.ui.green.button, .ui.green.buttons .button {
+.ui.green.button, .ui.green.buttons .button, .ui.green.button:focus, .ui.green.buttons .button:focus {
   background-color: #00976e;
 }
 
