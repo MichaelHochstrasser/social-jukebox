@@ -13,20 +13,20 @@ export class PlaySite extends Component {
         this.db = firebase.firestore().collection('Songs');
 
         this.updateSongs = this.updateSongs.bind(this);
-        this.setSessionId();
 
         this.state = {
             songs: [],
             isModalOpen: false,
             sessionId: ''
         };
+
+        this.setSessionId();
     }
 
     setSessionId() {
-        if (localStorage.getItem('sessionId')==null) {
-            localStorage.setItem('sessionId', this.randomSession());
+        if (localStorage.getItem('sessionId')==undefined) {
+            localStorage.setItem('sessionId', this.randomSession().toString());
         }
-        this.setState({'sessionId': localStorage.getItem('sessionId')});
     }
 
     openModal() {
