@@ -6,7 +6,7 @@ export class NowPlaying extends Component {
 
     constructor(props) {
         super(props);
-        this.player = {};
+        this.player = null;
         this.trackProgressTimer = {};
 
         this.state = {
