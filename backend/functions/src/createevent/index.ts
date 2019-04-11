@@ -20,18 +20,19 @@ export default functions.https.onRequest((request, response) => {
   }
 
   const nameAttribute: string = "name";
+  const userIdAttribute: string = "userId";
 
   if (
     request.method !== "POST" ||
     !request.body ||
-    !checkParamsExist(request.body, [nameAttribute])
+    !checkParamsExist(request.body, [nameAttribute, userIdAttribute])
   ) {
     response.status(400).send("Bad Request!");
     return;
   }
 
   return firestoreHelper
-    .createOrUpdateEvent(new Event(request.body[nameAttribute]))
+    .createOrUpdateEvent(new Event(request.body[nameAttribute], request.body[userIdAttribute]))
     .then((event: Event | void) => {
       if (event) {
         response.status(200).send(event);
