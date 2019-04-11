@@ -80,7 +80,7 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button className={this.isAlreadyVoted()? '' : 'basic'} basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
+                        <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
                         <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>
