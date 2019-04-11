@@ -7,6 +7,7 @@ export class NowPlaying extends Component {
     constructor(props) {
         super(props);
         this.player = {};
+        this.trackProgressTimer = {};
 
         this.state = {
             currentTrack: {},
@@ -15,6 +16,7 @@ export class NowPlaying extends Component {
             paused: true,
         };
     }
+
 
     componentDidMount() {
         const spotifyPlayerScriptTag = document.createElement('script');
@@ -25,15 +27,16 @@ export class NowPlaying extends Component {
 
 
         const timeInterval = 250;
-        window.setInterval(() => {
+        this.trackProgressTimer = window.setInterval(() => {
             if (!this.state.paused) {
                 this.state.trackPosition += timeInterval;
-                console.log(this.state.trackPosition);
             }
         }, timeInterval);
     }
 
     componentWillUnmount() {
+        window.clearInterval(this.trackProgressTimer);
+
         this.player.disconnect();
         let spotifyPlayerScriptyTag = document.getElementById("spotifyPlayer");
         document.body.removeChild(spotifyPlayerScriptyTag);
