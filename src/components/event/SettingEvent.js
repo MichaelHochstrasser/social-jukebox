@@ -60,9 +60,9 @@ export class SettingEvent extends Component {
                             </Grid.Row>
                             <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
                             <Grid.Row><Grid.Column textAlign='center'><Header as='h2'>Share your event with friends</Header></Grid.Column></Grid.Row>
-                            <Grid.Row><Grid.Column textAlign='center'><a href={`${FRONTEND_BASE_URL}/event/${this.props.match.params.id}`}>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
+                            <Grid.Row><Grid.Column textAlign='center'><a href={`${FRONTEND_BASE_URL}/event/${this.props.match.params.id}`}>{FRONTEND_BASE_URL}/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
                             <Grid.Row><Grid.Column textAlign='center'><QRCode
-                                value={`https://jukebox.dj/event/${this.props.match.params.id}`}
+                                value={`${FRONTEND_BASE_URL}/event/${this.props.match.params.id}`}
                                 size={256}
                                 logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Love_Heart_symbol.svg/2000px-Love_Heart_symbol.svg.png"
                                 bgColor="#2ED665"
