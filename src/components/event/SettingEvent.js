@@ -25,7 +25,6 @@ export class SettingEvent extends Component {
     updateEvent() {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
-            .where("userId", "==", localStorage.getItem("userId"))
             .get()
             .then(querySnapshot => {
                 let events = [];
