@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Button, Modal, Table, Header, Message} from 'semantic-ui-react'
+import {Grid, Button, Modal, Table, Message} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import {SearchSongs} from "../search/SearchSongs";
 
