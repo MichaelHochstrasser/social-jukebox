@@ -1,3 +1,4 @@
 node_modules/
 *.env
 /social-jukebox.iml
+build/
