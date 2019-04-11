@@ -58,20 +58,24 @@ export class SearchSongs extends Component {
     }
 
     searchSong = (query) => {
-        const axios = require('axios');
-        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/search?term=' + query + '&eventId=' + this.props.eventId;
-        const header = {
-            'Content-Type': 'application/json'
-        };
+        if (query) {
+            const axios = require('axios');
+            const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/search?term=' + query + '&eventId=' + this.props.eventId;
+            const header = {
+                'Content-Type': 'application/json'
+            };
 
-        axios.get(url, header)
-            .then(function (response) {
-                console.log('Found ' + response.data.length + ' songs.');
-                songs = response.data;
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+            axios.get(url, header)
+                .then(function (response) {
+                    console.log('Found ' + response.data.length + ' songs.');
+                    songs = response.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+            songs = [];
+        }
     }
 
     addSong = (song) => {
