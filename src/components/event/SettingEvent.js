@@ -14,35 +14,42 @@ export class SettingEvent extends Component {
     }
 
     state = {
-        event: {name: 'Unknown Event', refreshToken: 'empty', eventId: 'empty'},
-        redirect: false
+        event: {name: 'Unknown Event', refreshToken: 'empty', eventId: 'empty', userId: ''},
+        redirect: false,
+        userId: ''
     }
 
     componentDidMount() {
         this.updateEvent();
+        this.setState({userId: localStorage.getItem('userId')});
     }
 
     updateEvent() {
         let eventId = this.props.match.params.id;
-        this.db.where("eventId", "==", eventId)
+        this.db.doc(eventId)
             .get()
-            .then(querySnapshot => {
-                let events = [];
-                querySnapshot.forEach(doc => events.push(doc.data()));
-                if (events.length>0) {
-                    this.setState({event: events[0]});
+            .then(eventDoc => {
+                if (eventDoc.exists) {
+                    this.setState({
+                        event: eventDoc.data()
+                    })
                 } else {
-                    this.setState({event: {name: 'Unknown Event'}});
+                    console.log('Event not found!');
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log("Error getting documents: ", error);
             });
     }
 
     loadPage() {
-        if(localStorage.getItem('userId')!=this.state.event.userId) {
-            return (<Container><Message color='red'>Your are not an admin of this event. No Access.</Message></Container>);
+        if(this.state.userId!=this.state.event.userId) {
+            return (<div>
+                <MenuBasic eventId={this.props.match.params.id}/>
+                <Container>
+                    <Message color='red'>Your are not an admin of this event. No Access.</Message>
+                </Container>
+            </div>);
         } else {
             return (<div>
                 <MenuBasic eventId={this.props.match.params.id}/>
@@ -53,8 +60,6 @@ export class SettingEvent extends Component {
                             <Grid.Row>
                                 <Grid.Column textAlign='center'>
                                     <Header as='h1'>Settings</Header>
-                                    <p>{this.state.event.userId}</p>
-                                    <p>{localStorage.getItem('userId')}</p>
                                 </Grid.Column>
                             </Grid.Row>
                             <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
