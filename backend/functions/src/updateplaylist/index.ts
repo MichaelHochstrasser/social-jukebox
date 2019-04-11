@@ -76,7 +76,6 @@ export default functions.https.onRequest((request, response) => {
                                       console.error(err.response);
                                       response.status(500).send("Internal Error");
                                   });
-                            })
                           })
                           .catch((err: any) => {
                               console.error(err.response);

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Container, Grid, Icon, Progress, Segment} from "semantic-ui-react";
 import firebase from "../firebase/Firebase";
+import {BACKEND_BASE_URL} from "../../shared/constants";
 
 export class NowPlaying extends Component {
 
@@ -80,6 +81,38 @@ export class NowPlaying extends Component {
             })
             .catch(error => console.log("Error getting document: ", error));
     }
+
+    resetFinishedSong(songId) {
+        const axios = require('axios');
+
+        const url = `${BACKEND_BASE_URL}/resetFinishedSong`;
+        const body = {
+            eventId: this.props.eventId,
+            songId: songId
+        };
+        const header = {
+            'Content-Type': 'application/json'
+        };
+
+        axios.post(url, body, header)
+            .then((response) => {
+                console.log(response);
+                this.setState({
+                    redirect: true,
+                    target: `/event/${response.data.eventId}/setting`,
+                    showError: false,
+                    disabledClasses: classNames({disabled: false})
+                })
+
+            })
+            .catch((error) => {
+                console.log(error);
+                this.setState({
+                    showError: true,
+                    disabledClasses: classNames({disabled: false})
+                })
+            });
+    };
 
     render() {
         const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : '';
