@@ -25,6 +25,7 @@ export class SettingEvent extends Component {
     updateEvent() {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
+            .where("userId", "==", localStorage.getItem("userId"))
             .get()
             .then(querySnapshot => {
                 let events = [];
@@ -40,6 +41,40 @@ export class SettingEvent extends Component {
             });
     }
 
+    loadPage() {
+        if(localStorage.getItem('userId')!=this.state.event.userId) {
+            return (<Container><Message color='red'>Your are not an admin of this event. No Access.</Message></Container>);
+        } else {
+            return (<div>
+                <MenuBasic eventId={this.props.match.params.id}/>
+                <Container>
+                    {this.renderRedirect()}
+                    <div className="button-container">
+                        <Grid>
+                            <Grid.Row>
+                                <Grid.Column textAlign='center'>
+                                    <Header as='h1'>Settings</Header>
+                                    <p>{this.state.event.userId}</p>
+                                    <p>{localStorage.getItem('userId')}</p>
+                                </Grid.Column>
+                            </Grid.Row>
+                            <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
+                            <Grid.Row><Grid.Column textAlign='center'><Header as='h2'>Share your event with friends</Header></Grid.Column></Grid.Row>
+                            <Grid.Row><Grid.Column textAlign='center'><a href=''>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
+                            <Grid.Row><Grid.Column textAlign='center'><QRCode
+                                value={`https://jukebox.dj/event/${this.props.match.params.id}`}
+                                size={256}
+                                logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Love_Heart_symbol.svg/2000px-Love_Heart_symbol.svg.png"
+                                bgColor="#2ED665"
+                                fgColor="#000000"/></Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    </div>
+                </Container>
+            </div>);
+        }
+    }
+
     renderRedirect = () => {
         if (this.state.redirect) {
             return <Redirect to={this.state.target} />
@@ -47,31 +82,7 @@ export class SettingEvent extends Component {
     }
 
     render() {
-        return <div>
-            <MenuBasic eventId={this.props.match.params.id}/>
-            <Container>
-                {this.renderRedirect()}
-                <div className="button-container">
-                    <Grid>
-                        <Grid.Row>
-                            <Grid.Column textAlign='center'>
-                                <Header as='h1'>Settings</Header>
-                            </Grid.Column>
-                        </Grid.Row>
-                        <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
-                        <Grid.Row><Grid.Column textAlign='center'><Header as='h2'>Share your event with friends</Header></Grid.Column></Grid.Row>
-                        <Grid.Row><Grid.Column textAlign='center'><a href=''>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
-                        <Grid.Row><Grid.Column textAlign='center'><QRCode
-                            value={`https://jukebox.dj/event/${this.props.match.params.id}`}
-                            size={256}
-                            logo="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Love_Heart_symbol.svg/2000px-Love_Heart_symbol.svg.png"
-                            bgColor="#2ED665"
-                            fgColor="#000000"/></Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </div>
-            </Container>
-        </div>
+        return this.loadPage();
     }
 }
 
