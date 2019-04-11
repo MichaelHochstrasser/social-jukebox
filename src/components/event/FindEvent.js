@@ -8,12 +8,13 @@ export class FindEvent extends Component {
     constructor(props) {
         super(props);
 
-        this.db = firebase.firestore().collection('Events');
+        const userId = localStorage.getItem("userId");
+        this.db = firebase.firestore().collection('Events').where("userId", "==", userId);
     }
 
     state = {
         events: []
-    }
+    };
 
     componentDidMount() {
         this.db.onSnapshot(this.onUpdate )
