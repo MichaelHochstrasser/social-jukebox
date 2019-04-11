@@ -8,6 +8,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.ui.basic.green.button, .ui.basic.green.buttons .button{
+  color: #00976e !important;
+  box-shadow: 0 0 0 1px #00976e inset !important;
+}
+
+.ui.green.button, .ui.green.buttons .button {
+  background-color: #00976e;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

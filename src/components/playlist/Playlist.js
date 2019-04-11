@@ -15,7 +15,7 @@ export default (props) => {
                         <Modal.Header>Search for a song to add.</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
-                                <SearchSongs loadedSongs={props.songs.map(s => s.songId)} autoFocus eventId={props.eventId} closeModal={props.closeModal}/>
+                                <SearchSongs loadedSongs={props.songs.map(s => s.spotifySongId)} autoFocus eventId={props.eventId} closeModal={props.closeModal}/>
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>
