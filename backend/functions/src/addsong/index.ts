@@ -47,7 +47,7 @@ export default functions.https.onRequest((request, response) => {
           .getSongInfo(request.body[songIdAttr])
           .then((result: SpotifyTrack | void) => {
             if (!result) {
-              response.status(500).send("Song not found!");
+              response.status(500).send("Song not found on Spotify!");
             } else {
               firestoreHelper
                 .addOrUpdateSong(
@@ -61,10 +61,12 @@ export default functions.https.onRequest((request, response) => {
                     result.popularity,
                     result.image
                   ),
-                  event.spotifyToken
+                  event.spotifyToken,
+                  event.refreshToken,
+                  event.validUntil
                 )
                 .then(() => response.status(200).send())
-                .catch(msg => response.status(500).send(msg));
+                .catch((err: Error) => response.status(500).send(err.message));
             }
           })
           .catch((err: Error) => {

@@ -4,13 +4,13 @@ import { SpotifyTrack } from "./SpotifyTrack";
 
 export class Song implements SpotifyTrack {
   public get id() {
-    return this.songId;
+    return this.spotifySongId;
   }
 
   constructor(
     public eventId: string,
     public playlistId: string,
-    public songId: string = "6rqhFgbbKwnb9MLmUQDhG6",
+    public spotifySongId: string = "6rqhFgbbKwnb9MLmUQDhG6",
     public title: string = "",
     public artist: string = "",
     public duration_ms: number = 0,

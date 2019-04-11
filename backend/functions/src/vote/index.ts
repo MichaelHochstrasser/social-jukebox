@@ -46,13 +46,13 @@ export default functions.https.onRequest((request, response) => {
       if (!event || event.eventId !== request.body[eventIdAttr]) {
         throw new Error("Event not found");
       } else {
-        return firestoreHelper.getSong(request.body[songIdAttr]);
+        return firestoreHelper.getSong(request.body[songIdAttr], request.body[eventIdAttr]);
       }
     })
-    .then((song: Song | void) => {
+    .then((song: Song | null) => {
       if (
         !song ||
-        song.songId !== request.body[songIdAttr] ||
+        song.spotifySongId !== request.body[songIdAttr] ||
         song.eventId !== request.body[eventIdAttr]
       ) {
         throw new Error("Song not found or not consistent");

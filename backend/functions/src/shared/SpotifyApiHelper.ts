@@ -66,7 +66,7 @@ export class SpotifyHelper {
             image: response.data.album.images[0].url as string
           } as SpotifyTrack;
         } else {
-          throw new Error("No data returned!");
+          throw new Error("No data returned from Spotify!");
         }
       })
       .catch(err => {
