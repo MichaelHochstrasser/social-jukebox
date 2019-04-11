@@ -10,7 +10,7 @@ export default functions.https.onRequest((request, response) => {
         response.status(400).send("no eventId given. Please provide the eventId as query parameter (?eventId=XYZ");
         return;
     }
-    firestoreHelper.getEvent(eventId)
+    return firestoreHelper.getEvent(eventId)
         .then((event) => {
             if(!event){
                 response.status(400).send(`event with id "${eventId}" not found.`);

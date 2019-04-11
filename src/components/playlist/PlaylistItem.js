@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Button, Icon, Table, Header, Image, Message} from 'semantic-ui-react'
 import axios from 'axios';
+import VoteButton from './VoteButton';
 
 class PlaylistItem extends Component {
 
@@ -8,7 +9,8 @@ class PlaylistItem extends Component {
         super(props)
         this.state = {
             sessionId: localStorage.getItem('sessionId'),
-            showError: false
+            showError: false,
+            voteIsLoading: false
         };
         this.handleVote = this.handleVote.bind(this);
     }
@@ -18,6 +20,12 @@ class PlaylistItem extends Component {
     }
 
     handleVote(vote) {
+        this.setState({
+            voteIsLoading: true
+        }, this.sendVote.bind(this, vote));
+    };
+
+    sendVote(vote) {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
             songId: this.props.songId,
@@ -33,25 +41,31 @@ class PlaylistItem extends Component {
         .then((response) => {
             console.log(response);
             const event = response.data;
-            this.setState({showError: false});
+            this.setState({
+                showError: false,
+                voteIsLoading: false
+            });
             return;
         })
         .catch((error) => {
             console.log(error);
-            this.setState({showError: true});
+            this.setState({
+                showError: true,
+                voteIsLoading: false
+            });
         });
-    };
+    }
 
     isAlreadyVoted() {
-        for (var i in this.props.voters) {
-            if (this.props.voters[i]==this.state.sessionId) {
-                return true;
-            }
-        }
-        return false;
+        const { voters } = this.props;
+        const { sessionId } = this.state;
+
+        return voters.findIndex((voter) => voter === sessionId) !== -1
     }
 
     render() {
+        const { voteIsLoading } = this.state;
+
         return <Table.Row>
                 <Table.Cell>
                     <Header as='h4' image>
@@ -65,9 +79,13 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
-                        <Button basic color='grey'>{this.props.votes}</Button>
-                        <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
+                        <VoteButton active={this.isAlreadyVoted()} color="red" onClick={this.handleVote.bind(this)} voteValue={-1} disabled={voteIsLoading}>
+                            <Icon name='thumbs down outline' />
+                        </VoteButton>
+                        <Button basic color='grey' disabled={voteIsLoading}>{this.props.votes}</Button>
+                        <VoteButton active={this.isAlreadyVoted()} color="green" onClick={this.handleVote.bind(this)} voteValue={1} disabled={voteIsLoading}>
+                            <Icon name='thumbs up outline' />
+                        </VoteButton>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>

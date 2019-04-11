@@ -78,7 +78,7 @@ export class SettingEvent extends Component {
 class ConnectComp extends Component{
 
     connectSpotify = () => {
-        window.location.replace(`https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken&scope=user-read-private%20playlist-modify-public%20playlist-modify-private&state=${this.props.eventId}`);
+        window.location.replace(`https://accounts.spotify.com/authorize?client_id=68fd4d58904748c7bc63c038fa3a5f01&response_type=code&redirect_uri=http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken&scope=user-read-birthdate%20user-read-email%20streaming%20user-read-private%20playlist-modify-public%20playlist-modify-private&state=${this.props.eventId}`);
     };
 
     render() {

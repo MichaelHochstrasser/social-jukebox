@@ -11,10 +11,12 @@ export class PlaySite extends Component {
         super(props);
 
         this.db = firebase.firestore().collection('Songs');
+        this.eventDb = firebase.firestore().collection('Events');
 
         this.updateSongs = this.updateSongs.bind(this);
 
         this.state = {
+            event: null,
             songs: [],
             isModalOpen: false,
             sessionId: ''
@@ -43,13 +45,14 @@ export class PlaySite extends Component {
 
     componentDidMount() {
         this.updatePlaylist();
+        this.loadEvent();
     }
 
     updateSongs() {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
             .orderBy('voteCount', 'desc')
-            .orderBy('dateAdded', 'desc')
+            .orderBy('dateAdded', 'asc')
             .get()
             .then(querySnapshot => {
                 let songs = [];
@@ -61,6 +64,24 @@ export class PlaySite extends Component {
             });
     }
 
+    loadEvent() {
+        let eventId = this.props.match.params.id;
+        this.eventDb.doc(eventId)
+        .get()
+        .then(eventDoc => {
+            if (eventDoc.exists) {
+                this.setState({
+                    event: eventDoc.data().name
+                })
+            } else {
+                console.log('Event not found!');
+            }
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
     randomSession() {
         const min = 10000;
         const max = 10000000000000000;
@@ -70,11 +91,12 @@ export class PlaySite extends Component {
 
     render() {
         let eventId = this.props.match.params.id;
+        const { event } = this.state;
         return <div>
             <MenuBasic eventId={eventId} />
             <Container>
                 <NowPlaying eventId={eventId} />
-                <div>{this.state.sessionId}</div>
+                { event && <h1>{event}</h1> }
                 <Playlist eventId={this.props.match.params.id} closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} updatePlaylist={this.updatePlaylist()} />
             </Container>
         </div>

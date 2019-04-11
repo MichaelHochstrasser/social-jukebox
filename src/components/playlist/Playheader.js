@@ -17,15 +17,15 @@ export class Playheader extends Component {
             <Grid>
                 <Grid.Row>
                     <Grid.Column textAlign='center'>
-                        <h2>{this.state.currentSong.title}</h2>
-                        <p>{this.state.currentSong.artist}</p>
+                        <h2>{this.state.currentTrack.title}</h2>
+                        <p>{this.state.currentTrack.artist}</p>
                         <Icon name='play' />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
                         <Progress percent={10} size='tiny'>
-                            {this.state.currentSong.time}
+                            {this.state.currentTrack.time}
                         </Progress>
                     </Grid.Column>
                 </Grid.Row>
