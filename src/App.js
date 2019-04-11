@@ -6,7 +6,6 @@ import {PlaySite} from "./components/playlist/PlaySite";
 import {FindEvent} from "./components/event/FindEvent";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import {Home} from "./components/home/Home";
-import {MenuBasic} from "./components/menu/MenuBasic";
 import {SettingEvent} from "./components/event/SettingEvent";
 
 class App extends Component {

@@ -35,7 +35,7 @@ class PlaylistItem extends Component {
     handleVote(vote) {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
-            spotifySongId: this.props.songId,
+            songId: this.props.songId,
             eventId: this.props.eventId,
             vote: vote,
             sessionId: this.state.sessionId
@@ -72,7 +72,7 @@ class PlaylistItem extends Component {
                     <Header as='h4' image>
                         <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
-                            {this.props.songtitle} {this.props.songId}
+                            {this.props.songtitle}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
                         </Header.Content>
                     </Header>
@@ -80,7 +80,7 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button className={this.isAlreadyVoted()? '' : 'basic'} basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
+                        <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
                         <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>

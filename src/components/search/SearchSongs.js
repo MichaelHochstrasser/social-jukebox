@@ -65,14 +65,7 @@ export class SearchSongs extends Component {
                 'Content-Type': 'application/json'
             };
 
-            axios.get(url, header)
-                .then(function (response) {
-                    console.log('Found ' + response.data.length + ' songs.');
-                    songs = response.data;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            return axios.get(url, header);
         } else {
             songs = [];
         }
@@ -98,21 +91,30 @@ export class SearchSongs extends Component {
     }
 
     handleSearchChange = (e, {value}) => {
-        this.searchSong(value);
-        this.setState({isLoading: true, value})
+        if (value) {
+            this.setState({isLoading: true, value})
 
-        setTimeout(() => {
-            if (this.state.value.length < 1) return this.resetComponent()
+            let that = this;
 
-            const newSongs = songs.map(s => ({ ...s, key: s.id }));
-            const re = new RegExp(_.escapeRegExp(this.state.value), 'i')
-            const isMatch = result => re.test(result.title) || re.test(result.artist)
+            this.searchSong(value).then(function (response) {
+                console.log('Found ' + response.data.length + ' songs.');
+                songs = response.data;
+                const newSongs = songs.map(s => ({...s, key: s.id}));
+                const re = new RegExp(_.escapeRegExp(that.state.value), 'i')
+                const isMatch = result => re.test(result.title) || re.test(result.artist)
 
-            this.setState({
-                isLoading: false,
-                results: _.filter(newSongs, isMatch).sort((a, b) => (a.popularity < b.popularity) ? 1 : -1),
+                that.setState({
+                    isLoading: false,
+                    results: _.filter(newSongs, isMatch).sort((a, b) => (a.popularity < b.popularity) ? 1 : -1),
+                })
             })
-        }, 1000)
+                .catch(function (error) {
+                    console.log(error);
+                });
+        } else {
+            this.setState({isLoading: false, value});
+        }
+
     }
 
     render() {
