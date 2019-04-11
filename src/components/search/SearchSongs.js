@@ -6,8 +6,23 @@ import './SearchSong.css';
 import './circle.css';
 
 let songs = [];
+let loadedSongs = [];
 
-const resultRenderer = ({id, image, title, artist, duration_ms, popularity}) => {
+const resultRenderer = ({id, songid, image, title, artist, duration_ms, popularity}) => {
+    let rightContent;
+
+    if (loadedSongs.includes(songid)) {
+        rightContent = <div><span className='already-added'>Already in playlist</span></div>
+    } else {
+        rightContent = <div className={'small green c100 p' + popularity}>
+            <span>{popularity}%</span>
+            <div className="slice">
+                <div className="bar"></div>
+                <div className="fill"></div>
+            </div>
+        </div>;
+    }
+
     return <div className='main-container' key={id}>
         <div className='left-content'>
             <img alt='song' height={55} src={image}/>
@@ -18,13 +33,7 @@ const resultRenderer = ({id, image, title, artist, duration_ms, popularity}) => 
             <div className='song-duration'>{millisToMinutesAndSeconds(duration_ms)}</div>
         </div>
         <div className='right-content'>
-            <div className={'small green c100 p' + popularity}>
-            <span>{popularity}%</span>
-            <div className="slice">
-                <div className="bar"></div>
-                <div className="fill"></div>
-            </div>
-        </div>
+            {rightContent}
         </div>
     </div>
 };
@@ -46,6 +55,7 @@ resultRenderer.propTypes = {
 
 export class SearchSongs extends Component {
     componentWillMount() {
+        loadedSongs = this.props.loadedSongs;
         this.resetComponent()
     }
 
@@ -97,9 +107,9 @@ export class SearchSongs extends Component {
             let that = this;
 
             this.searchSong(value).then(function (response) {
-                console.log('Found ' + response.data.length + ' songs.');
                 songs = response.data;
-                const newSongs = songs.map(s => ({...s, key: s.id}));
+                let newSongs = songs.map(s => ({...s, songid: s.id}));
+                newSongs = newSongs.map(s => ({...s, key: s.id}));
                 const re = new RegExp(_.escapeRegExp(that.state.value), 'i')
                 const isMatch = result => re.test(result.title) || re.test(result.artist)
 
