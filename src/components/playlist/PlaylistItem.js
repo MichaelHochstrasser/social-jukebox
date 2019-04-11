@@ -35,7 +35,7 @@ class PlaylistItem extends Component {
     handleVote(vote) {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
-            spotifySongId: this.props.songId,
+            songId: this.props.songId,
             eventId: this.props.eventId,
             vote: vote,
             sessionId: this.state.sessionId
@@ -72,7 +72,7 @@ class PlaylistItem extends Component {
                     <Header as='h4' image>
                         <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
-                            {this.props.songtitle} {this.props.songId}
+                            {this.props.songtitle}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
                         </Header.Content>
                     </Header>
