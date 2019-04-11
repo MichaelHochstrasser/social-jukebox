@@ -57,12 +57,12 @@ export class PlaySite extends Component {
 
     loadEvent() {
         let eventId = this.props.match.params.id;
-        this.eventDb.where("eventId", "==", eventId)
+        this.eventDb.doc(eventId)
         .get()
-        .then(querySnapshot => {
-            if (querySnapshot.docs && querySnapshot.docs.length) {
+        .then(eventDoc => {
+            if (eventDoc.exists) {
                 this.setState({
-                    event: querySnapshot.docs[0].data().name
+                    event: eventDoc.data().name
                 })
             } else {
                 console.log('Event not found!');
