@@ -6,7 +6,7 @@ export class NowPlaying extends Component {
 
     constructor(props) {
         super(props);
-        this.player = {};
+        this.player = null;
         this.trackProgressTimer = {};
 
         this.state = {
@@ -37,7 +37,9 @@ export class NowPlaying extends Component {
     componentWillUnmount() {
         window.clearInterval(this.trackProgressTimer);
 
-        this.player.disconnect();
+        if (this.player) {
+            this.player.disconnect();
+        }
         let spotifyPlayerScriptyTag = document.getElementById("spotifyPlayer");
         document.body.removeChild(spotifyPlayerScriptyTag);
     }
