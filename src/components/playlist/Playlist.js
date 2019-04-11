@@ -15,7 +15,7 @@ export default (props) => {
                         <Modal.Header>Search for a song to add. Please do not type that fast ... :)</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
-                                <SearchSongs eventId={props.eventId} closeModal={props.closeModal}/>
+                                <SearchSongs autoFocus eventId={props.eventId} closeModal={props.closeModal}/>
                             </Modal.Description>
                         </Modal.Content>
                         <Modal.Actions>
