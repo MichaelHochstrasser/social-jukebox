@@ -30,14 +30,21 @@ export class Home extends Component {
         );
     }
 
+    parseJwt (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(window.atob(base64));
+    };
+
     onSignIn(googleUser) {
         var profile = googleUser.getBasicProfile();
         console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
         console.log('Name: ' + profile.getName());
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        console.log('sub: ' + this.parseJwt(googleUser.getAuthResponse().id_token).sub); // This is null if the 'email' scope is not present.
         this.setState({grind: profile.getImageUrl()});
-        document.cookie=`jukebox=${googleUser.getAuthResponse().id_token}`
+        localStorage.setItem('userId', this.parseJwt(googleUser.getAuthResponse().id_token).sub)
     }
 
     onSignOut() {
