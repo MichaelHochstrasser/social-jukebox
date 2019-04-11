@@ -180,77 +180,101 @@ export class FireStoreHelper {
     }).catch((err) => { throw err; });
   }
 
-  addOrUpdateSong(song: Song, spotifyToken?: string, refreshToken?: string, validUntil?: number): Promise<Song | void> {
-    let isNew: boolean;
+    getPlaylist(eventId: string): Promise<Song[] | void> {
+      console.log('Getting Playlist');
+        return this.firestore.collection("Songs")
+            .where("eventId", "==", eventId)
+            .orderBy("voteCount", "desc")
+            .orderBy("dateAdded", "asc")
+            .get()
+            .then((snapshot: QuerySnapshot) => {
+                if (!snapshot.empty) {
+                    const result: Song[] = [];
+                    snapshot.forEach(doc => {
+                        result.push(doc.data() as Song);
+                    });
 
-    return new Promise<DocumentReference>((resolve, reject) => {
-      this.getExistingSongDocument(song.spotifySongId, song.eventId).then((docRef: DocumentReference | null) => {
-        if (docRef) {
-          // Song exists, proceed
-          isNew = false;
-          resolve(docRef);
-        } else {
-          // Song does not exist, return new one
-          isNew = true;
-          resolve(this.getNewSongDocument());
-        }
-      }).catch((err) => {
-        reject(err);
-      });
-    }).then((docRef: DocumentReference) => {
-      // TODO: Separate SongId & internal Id!
-      // TODO: Check if song already exists in event --> then it's and upate! else it's and add!
-      console.log("Add or Update Song", song);
-
-      return new Promise<void>((resolve, reject) => {
-        if (!isNew) {
-          // If the song is not new, we don't need to add it to the playlist.
-          console.log('Song is not new, not adding it to Playlist.');
-          resolve();
-        } else if (isNew && song && song.playlistId && spotifyToken) {
-          console.log('Attempting to add Song to Spotify Playlist.');
-          const spotifyHelper = new SpotifyHelper(spotifyToken, refreshToken, validUntil);
-
-          spotifyHelper
-            .addSongToPlaylist(song.playlistId, song.spotifySongId)
-            .then(success => {
-              if (success) {
-                console.log('Successfully added song to playlist');
-                resolve();
-              } else {
-                console.log('Could not add Song to Spotify Playlist!');
-                reject(new Error("Could not add Song to Spotify Playlist!"));
-              }
-            })
-            .catch((err: Error) => {
-              console.log(err.message);
-              throw err;
-            });
-        } else {
-          console.log('Playlist ID or Spotifytoken not available!');
-          reject(new Error("Playlist ID or Spotifytoken not available!"));
-        }
-      })
-        .then(() => {
-          console.log('Saving Song to FireStore.')
-          return docRef
-            .set({ ...song })
-            .then((result: WriteResult) => {
-              return song;
+                    return result;
+                }
+                console.error("Could not find any songs for event!");
+                return;
             })
             .catch(err => {
-              console.log(err);
-              throw err;
+                console.log(err);
             });
-        })
-        .catch(spotifyAddError => {
-          throw spotifyAddError;
+    }
+
+    addOrUpdateSong(song: Song, spotifyToken?: string, refreshToken?: string, validUntil?: number): Promise<Song | void> {
+        let isNew: boolean;
+
+        return new Promise<DocumentReference>((resolve, reject) => {
+            this.getExistingSongDocument(song.spotifySongId, song.eventId).then((docRef: DocumentReference | null) => {
+                if (docRef) {
+                    // Song exists, proceed
+                    isNew = false;
+                    resolve(docRef);
+                } else {
+                    // Song does not exist, return new one
+                    isNew = true;
+                    resolve(this.getNewSongDocument());
+                }
+            }).catch((err) => {
+                reject(err);
+            });
+        }).then((docRef: DocumentReference) => {
+            // TODO: Separate SongId & internal Id!
+            // TODO: Check if song already exists in event --> then it's and upate! else it's and add!
+            console.log("Add or Update Song", song);
+
+            return new Promise<void>((resolve, reject) => {
+                if (!isNew) {
+                    // If the song is not new, we don't need to add it to the playlist.
+                    console.log('Song is not new, not adding it to Playlist.');
+                    resolve();
+                } else if (isNew && song && song.playlistId && spotifyToken) {
+                    console.log('Attempting to add Song to Spotify Playlist.');
+                    const spotifyHelper = new SpotifyHelper(spotifyToken, refreshToken, validUntil);
+
+                    spotifyHelper
+                        .addSongToPlaylist(song.playlistId, song.spotifySongId)
+                        .then(success => {
+                            if (success) {
+                                console.log('Successfully added song to playlist');
+                                resolve();
+                            } else {
+                                console.log('Could not add Song to Spotify Playlist!');
+                                reject(new Error("Could not add Song to Spotify Playlist!"));
+                            }
+                        })
+                        .catch((err: Error) => {
+                            console.log(err.message);
+                            throw err;
+                        });
+                } else {
+                    console.log('Playlist ID or Spotifytoken not available!');
+                    reject(new Error("Playlist ID or Spotifytoken not available!"));
+                }
+            })
+                .then(() => {
+                    console.log('Saving Song to FireStore.')
+                    return docRef
+                        .set({ ...song })
+                        .then((result: WriteResult) => {
+                            return song;
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            throw err;
+                        });
+                })
+                .catch(spotifyAddError => {
+                    throw spotifyAddError;
+                });
+        }).catch((err: Error) => {
+            console.log('Error getting Song Document');
+            throw err;
         });
-    }).catch((err: Error) => {
-      console.log('Error getting Song Document');
-      throw err;
-    });
-  }
+    }
 
   /* removeSong(songId: string) {
     const docRef: DocumentReference = this.getExistingSongDocument(songId);

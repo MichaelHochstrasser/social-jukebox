@@ -13,8 +13,42 @@ export class Home extends Component {
             redirect: false,
             eventName: '',
             showError: false,
-            disabledClasses: classNames({disabled: false})
+            disabledClasses: classNames({disabled: false}),
+            grind: ''
         };
+
+        this.onSignIn = this.onSignIn.bind(this);
+        this.onSignOut = this.onSignOut.bind(this);
+    }
+
+    componentDidMount() {
+        window.gapi.signin2.render(
+            "googleLogin",
+            {
+                onsuccess: this.onSignIn,
+            },
+        );
+    }
+
+    parseJwt (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(window.atob(base64));
+    };
+
+    onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        console.log('sub: ' + this.parseJwt(googleUser.getAuthResponse().id_token).sub); // This is null if the 'email' scope is not present.
+        this.setState({grind: profile.getImageUrl()});
+        localStorage.setItem('userId', this.parseJwt(googleUser.getAuthResponse().id_token).sub)
+    }
+
+    onSignOut() {
+
     }
 
     createEvent() {
@@ -25,6 +59,7 @@ export class Home extends Component {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
         const body = {
             name: this.state.eventName,
+            userId: localStorage.getItem('userId')
         };
         const header = {
             'Content-Type': 'application/json'
@@ -79,6 +114,12 @@ export class Home extends Component {
                             <Header as='h1'>Social Jukebox {this.state.message}</Header>
                             <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
                             {this.renderRedirect()}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column textAlign='center'>
+                            <div id="googleLogin"></div>
+                            <img src={this.state.grind}/>
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>

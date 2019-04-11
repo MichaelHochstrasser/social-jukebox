@@ -18,8 +18,17 @@ export class PlaySite extends Component {
         this.state = {
             event: null,
             songs: [],
-            isModalOpen: false
+            isModalOpen: false,
+            sessionId: ''
         };
+
+        this.setSessionId();
+    }
+
+    setSessionId() {
+        if (localStorage.getItem('sessionId')==undefined) {
+            localStorage.setItem('sessionId', this.randomSession().toString());
+        }
     }
 
     openModal() {
@@ -43,7 +52,7 @@ export class PlaySite extends Component {
         let eventId = this.props.match.params.id;
         this.db.where("eventId", "==", eventId)
             .orderBy('voteCount', 'desc')
-            .orderBy('dateAdded', 'desc')
+            .orderBy('dateAdded', 'asc')
             .get()
             .then(querySnapshot => {
                 let songs = [];
@@ -71,6 +80,13 @@ export class PlaySite extends Component {
         .catch(function(error) {
             console.log("Error getting documents: ", error);
         });
+    }
+
+    randomSession() {
+        const min = 10000;
+        const max = 10000000000000000;
+        const rand = Math.round(min + Math.random() * (max - min));
+        return rand;
     }
 
     render() {

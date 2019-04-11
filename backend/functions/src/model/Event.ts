@@ -7,6 +7,7 @@ export class Event {
 
   constructor(
     public name: string,
+    public userId: string,
     spotifyToken?: string,
     id?: string,
     playlistId?: string
