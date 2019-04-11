@@ -59,6 +59,7 @@ export class Home extends Component {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
         const body = {
             name: this.state.eventName,
+            userId: localStorage.getItem('userId')
         };
         const header = {
             'Content-Type': 'application/json'
