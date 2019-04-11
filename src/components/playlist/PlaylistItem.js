@@ -7,7 +7,7 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: localStorage.getItem('sessionId'),         //ToDo: Add sessionId here
+            sessionId: localStorage.getItem('sessionId'),
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
@@ -43,8 +43,8 @@ class PlaylistItem extends Component {
     };
 
     isAlreadyVoted() {
-        for (var voter in this.props.voters) {
-            if (voter==this.state.sessionId) {
+        for (var i in this.props.voters) {
+            if (this.props.voters[i]==this.state.sessionId) {
                 return true;
             }
         }
