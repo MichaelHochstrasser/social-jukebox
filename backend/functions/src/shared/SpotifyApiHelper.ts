@@ -99,11 +99,16 @@ export class SpotifyHelper {
   }
 
   async checkSpotifyConnection(): Promise<boolean> {
-    if (!this.accessToken) {
+    if (this.accessToken) {
+      await this.refreshAccessToken();
+    } else {
       return false;
     }
+
     const requestUrl = createSpotifyAPIUserMyPlaylistsURL();
+
     let status = false;
+    
     await axios
       .get(requestUrl, createHeader(this.accessToken))
       .then(() => {
@@ -193,9 +198,14 @@ export class SpotifyHelper {
       });
   }
 
-    reorderSongsOnPlaylist(playlistId: string, rangeStart: number, insertBefore: number, rangeLength: number = 1) {
-        if (this.accessToken) {
-            return axios
+  async reorderSongsOnPlaylist(playlistId: string, rangeStart: number, insertBefore: number, rangeLength: number = 1) {
+    if (this.accessToken) {
+      await this.refreshAccessToken();
+    } else {
+      throw new Error("Spotify token not set!");
+    }    
+    
+    return axios
                 .put(createSpotifyAPIReorderPlaylistURL(playlistId), {
                     range_start: rangeStart,
                     range_length: rangeLength,
@@ -211,26 +221,23 @@ export class SpotifyHelper {
                 .catch(err => {
                     throw err;
                 });
-        } else {
-            throw new Error("Spotify token not set!");
-        }
     }
 
     async getSpotifySearchResult(searchTerm: string, searchType: string): Promise<AxiosResponse> {
-        if (!this.accessToken) {
-            throw new Error("no access token");
-        }
-
+      if (this.accessToken) {
         await this.refreshAccessToken();
+      } else {
+        throw new Error("Spotify token not set!");
+      }    
 
-    return axios.get(
-      "https://api.spotify.com/v1/search",
-      createHeader(this.accessToken, "", {
-        q: searchTerm,
-        type: searchType,
-        market: "from_token"
-      })
-    );
+      return axios.get(
+        "https://api.spotify.com/v1/search",
+        createHeader(this.accessToken, "", {
+          q: searchTerm,
+          type: searchType,
+          market: "from_token"
+        })
+      );
   }
 
   async refreshAccessToken(force: boolean = false) {

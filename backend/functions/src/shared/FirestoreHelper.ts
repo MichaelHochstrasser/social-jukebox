@@ -126,7 +126,7 @@ export class FireStoreHelper {
           return Promise.all(
             result.docs.map((doc: QueryDocumentSnapshot) => {
               return this.createOrUpdateEvent({
-                ...doc.data,
+                ...doc.data(),
                 refreshToken,
                 spotifyToken: newAccessToken,
                 validUntil

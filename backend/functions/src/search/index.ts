@@ -59,6 +59,9 @@ export default functions.https.onRequest((request, response) => {
             console.error(err.response);
             response.status(500).send("Internal Error");
           });
+      } else {
+        console.log('Event not found');
+        response.status(500).send("Event not found!");
       }
     })
     .catch(err => response.status(500).send(err));
