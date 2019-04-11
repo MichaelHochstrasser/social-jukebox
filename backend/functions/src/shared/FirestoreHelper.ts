@@ -1,5 +1,4 @@
 import admin from "./admin";
-
 import {
   Firestore,
   CollectionReference,
@@ -11,8 +10,11 @@ import {
   QueryDocumentSnapshot
 } from "@google-cloud/firestore";
 
+import { SONG_COLLECTION, EVENT_COLLECTION } from "./constants";
+
 import { Event } from "../model/Event";
 import { Song } from "../model/Song";
+
 import { SpotifyHelper } from "./SpotifyApiHelper";
 
 export class FireStoreHelper {
@@ -23,7 +25,7 @@ export class FireStoreHelper {
   }
 
   private getEventDocument(eventId?: string): DocumentReference {
-    const collection: CollectionReference = this.firestore.collection("Events");
+    const collection: CollectionReference = this.firestore.collection(EVENT_COLLECTION);
 
     return eventId ? collection.doc(eventId) : collection.doc();
   }
@@ -62,11 +64,11 @@ export class FireStoreHelper {
               eventId: docRef.id
             } as Event;
           })
-          .catch(err => {
+          .catch((err: Error) => {
             throw err;
           });
       })
-      .catch(playListErr => {
+      .catch((playListErr: Error) => {
         throw playListErr;
       });
   }
@@ -99,6 +101,7 @@ export class FireStoreHelper {
       })
       .catch(err => {
         console.log(err);
+        throw err;
       });
   }
 
@@ -108,16 +111,17 @@ export class FireStoreHelper {
     refreshToken: string,
     validUntil: number
   ): Promise<void> {
-    console.log("We will now update tokens of Events!");
+    console.log("Updating Spotify tokens");
 
     const queryRef: Query = this.firestore
-      .collection("Events")
+      .collection(EVENT_COLLECTION)
       .where("spotifyToken", "==", oldAccessToken);
 
     return queryRef
       .get()
       .then((result: QuerySnapshot) => {
         console.log("Attempting to update these Events", result.docs);
+
         if (result && result.docs) {
           return Promise.all(
             result.docs.map((doc: QueryDocumentSnapshot) => {
@@ -128,7 +132,7 @@ export class FireStoreHelper {
                 validUntil
               } as Event)
                 .then(() => {
-                  console.log("Successfully updated");
+                  console.log("Successfully updated tokens of Event");
                   return Promise.resolve();
                 })
                 .catch(updateError => {
@@ -155,13 +159,13 @@ export class FireStoreHelper {
   }
 
   private getNewSongDocument(): DocumentReference {
-    const collection: CollectionReference = this.firestore.collection("Songs");
+    const collection: CollectionReference = this.firestore.collection(SONG_COLLECTION);
 
     return collection.doc();
   }
 
   private getExistingSongDocument(spotifySongId: string, eventId: string): Promise<DocumentReference | null> {
-    const collection: CollectionReference = this.firestore.collection("Songs");
+    const collection: CollectionReference = this.firestore.collection(SONG_COLLECTION);
 
     // Query for the Song
     const queryRef: Query = collection.where('spotifySongId', '==', spotifySongId).where('eventId', '==', eventId);

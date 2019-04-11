@@ -21,6 +21,7 @@ export default functions.https.onRequest((request, response) => {
   });
 
   if (request.method === "OPTIONS") {
+    response.status(204).send("");
     return;
   }
 

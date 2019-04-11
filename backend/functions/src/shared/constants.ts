@@ -17,3 +17,7 @@ export const createSpotifyAPIReorderPlaylistURL = (playlistId: string) =>
 export const createSpotifyAPIUserProfileURL = () => `${SPOTIFY_API_BASEURL}/me`;
 
 export const createSpotifyAPIUserMyPlaylistsURL = () => `${SPOTIFY_API_BASEURL}/me/playlists`;
+
+export const EVENT_COLLECTION = "Events";
+
+export const SONG_COLLECTION = "Songs";
