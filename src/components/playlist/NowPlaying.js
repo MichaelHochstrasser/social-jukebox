@@ -6,12 +6,12 @@ export class NowPlaying extends Component {
 
     constructor(props) {
         super(props);
-        this.spotifyWebPlaybackSDKReady = false;
         this.player = {};
 
-        //this.setUpSpotifyPlayer = this.setUpSpotifyPlayer.bind(this);
         this.state = {
             currentTrack: {},
+            trackPosition: 0,
+            trackDuration: 1,
             paused: true,
         };
     }
@@ -22,6 +22,15 @@ export class NowPlaying extends Component {
         spotifyPlayerScriptTag.id = "spotifyPlayer";
         document.body.appendChild(spotifyPlayerScriptTag);
         window.onSpotifyWebPlaybackSDKReady = () => this.setUpSpotifyPlayer();
+
+
+        const timeInterval = 250;
+        window.setInterval(() => {
+            if (!this.state.paused) {
+                this.state.trackPosition += timeInterval;
+                console.log(this.state.trackPosition);
+            }
+        }, timeInterval);
     }
 
     componentWillUnmount() {
@@ -50,9 +59,8 @@ export class NowPlaying extends Component {
 
                 // Playback status updates
                 this.player.addListener('player_state_changed', state => {
-                    console.log(state);
                     if (state) {
-                        this.setState({paused: state.paused, currentTrack: state.track_window.current_track});
+                        this.setState({paused: state.paused, currentTrack: state.track_window.current_track, trackPosition: state.position, trackDuration: state.duration});
                     }
                 });
 
@@ -70,18 +78,19 @@ export class NowPlaying extends Component {
 
     render() {
         const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : '';
+        const trackProgress = (this.state.trackPosition / this.state.trackDuration) * 100;
         return <Segment>
             <Grid className="App" columns={1}>
                 <Grid.Row>
                     <Container textAlign='center'>
                         <h2>{this.state.currentTrack.name}</h2>
                         <p>{artistName}</p>
-                        <Icon name={(this.state.paused) ? 'play' : 'pause'} />
+                        <Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' />
                     </Container>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
-                        <Progress percent={10} size='tiny'>
+                        <Progress percent={trackProgress} size='tiny'>
                             {this.state.currentTrack.time}
                         </Progress>
                     </Grid.Column>
