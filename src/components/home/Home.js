@@ -120,8 +120,8 @@ export class Home extends Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
-                            <div textAlign="center" id="googleLogin"></div>
-                            <img src={this.state.grind}/>
+                            <div id="googleLogin"></div>
+                            <img alt='Your photo' src={this.state.grind}/>
                         </Grid.Column>
                     </Grid.Row>
                     {localStorage.getItem('userId')? <Grid.Row>
