@@ -111,9 +111,11 @@ class ConnectComp extends Component{
             return (
                 <Grid.Row>
                     <Grid.Column textAlign='center'>
-                        <Message color='green'>You're successfully connected this party to a spotify account! Congrats!</Message>
-                        <Button basic color='orange' onClick={this.connectSpotify} size='huge'>Re-Connect your spotify
-                            account</Button>
+                        <Message color='green'>
+                            <b>Connected</b>
+                            <p>You're successfully connected this party to a spotify account! Congrats!</p>
+                            <p>If you wish to re-connect the account click the re-connect button.</p>
+                            <p><Button basic onClick={this.connectSpotify}>Re-connect</Button></p></Message>
                     </Grid.Column>
                 </Grid.Row>
             )
