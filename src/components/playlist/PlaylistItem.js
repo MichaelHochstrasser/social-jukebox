@@ -72,7 +72,7 @@ class PlaylistItem extends Component {
                     <Header as='h4' image>
                         <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
-                            {this.props.songtitle} {this.props.songId}
+                            {this.props.songtitle}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
                         </Header.Content>
                     </Header>
