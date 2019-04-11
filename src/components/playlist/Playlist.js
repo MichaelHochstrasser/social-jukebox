@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid, Button, Modal, Table, Header, Message} from 'semantic-ui-react'
+import {Grid, Button, Modal, Table, Message} from 'semantic-ui-react'
 import PlaylistItem from "./PlaylistItem";
 import {SearchSongs} from "../search/SearchSongs";
 
@@ -12,7 +12,7 @@ export default (props) => {
             <Grid.Row>
                 <Grid.Column textAlign='right'>
                     <Modal open={props.isModalOpen} trigger={ <Button onClick={props.openModal} color='red' icon='add' content='Add Song' size='medium' labelPosition='left'/>}>
-                        <Modal.Header>Search for a song to add. Please do not type that fast ... :)</Modal.Header>
+                        <Modal.Header>Search for a song to add.</Modal.Header>
                         <Modal.Content image>
                             <Modal.Description>
                                 <SearchSongs autoFocus eventId={props.eventId} closeModal={props.closeModal}/>
