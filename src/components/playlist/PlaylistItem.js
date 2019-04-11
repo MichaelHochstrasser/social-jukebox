@@ -7,29 +7,14 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: 'theVotar',         //ToDo: Add sessionId here
+            sessionId: localStorage.getItem('sessionId'),         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
     }
 
-    componentDidMount() {
-        //ToDo: Remove Random sessionId
-        /*this.timerID = setInterval(
-            () => this.randomSession(),
-            1000
-        );*/
-    }
-
     componentWillUnmount() {
         clearInterval(this.timerID);
-    }
-
-    randomSession() {
-        const min = 1;
-        const max = 1000;
-        const rand = Math.round(min + Math.random() * (max - min));
-        this.setState({ sessionId: rand });
     }
 
     handleVote(vote) {

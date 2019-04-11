@@ -13,11 +13,20 @@ export class PlaySite extends Component {
         this.db = firebase.firestore().collection('Songs');
 
         this.updateSongs = this.updateSongs.bind(this);
+        this.setSessionId();
 
         this.state = {
             songs: [],
-            isModalOpen: false
+            isModalOpen: false,
+            sessionId: ''
         };
+    }
+
+    setSessionId() {
+        if (localStorage.getItem('sessionId')==null) {
+            localStorage.setItem('sessionId', this.randomSession());
+        }
+        this.setState({'sessionId': localStorage.getItem('sessionId')});
     }
 
     openModal() {
@@ -52,12 +61,20 @@ export class PlaySite extends Component {
             });
     }
 
+    randomSession() {
+        const min = 10000;
+        const max = 10000000000000000;
+        const rand = Math.round(min + Math.random() * (max - min));
+        return rand;
+    }
+
     render() {
         let eventId = this.props.match.params.id;
         return <div>
             <MenuBasic eventId={eventId} />
             <Container>
                 <NowPlaying eventId={eventId} />
+                <div>{this.state.sessionId}</div>
                 <Playlist eventId={this.props.match.params.id} closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} updatePlaylist={this.updatePlaylist()} />
             </Container>
         </div>
