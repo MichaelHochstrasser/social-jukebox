@@ -45,7 +45,6 @@ class PlaylistItem extends Component {
                 showError: false,
                 voteIsLoading: false
             });
-            return;
         })
         .catch((error) => {
             console.log(error);
@@ -56,11 +55,18 @@ class PlaylistItem extends Component {
         });
     }
 
-    isAlreadyVoted() {
+    isAlreadyUpVoted() {
         const { voters } = this.props;
         const { sessionId } = this.state;
 
-        return voters.findIndex((voter) => voter === sessionId) !== -1
+        return voters.findIndex((voter) => voter.sessionId === sessionId && voter.vote === 1) !== -1
+    }
+
+    isAlreadyDownVoted() {
+        const { voters } = this.props;
+        const { sessionId } = this.state;
+
+        return voters.findIndex((voter) => voter.sessionId === sessionId && voter.vote === -1) !== -1
     }
 
     render() {
@@ -79,11 +85,11 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <VoteButton active={this.isAlreadyVoted()} color="red" onClick={this.handleVote.bind(this)} voteValue={-1} disabled={voteIsLoading}>
+                        <VoteButton active={this.isAlreadyDownVoted()} color="red" onClick={this.handleVote.bind(this)} voteValue={-1} disabled={voteIsLoading}>
                             <Icon name='thumbs down outline' />
                         </VoteButton>
                         <Button basic color='grey' disabled={voteIsLoading}>{this.props.votes}</Button>
-                        <VoteButton active={this.isAlreadyVoted()} color="green" onClick={this.handleVote.bind(this)} voteValue={1} disabled={voteIsLoading}>
+                        <VoteButton active={this.isAlreadyUpVoted()} color="green" onClick={this.handleVote.bind(this)} voteValue={1} disabled={voteIsLoading}>
                             <Icon name='thumbs up outline' />
                         </VoteButton>
                     </Button.Group>
