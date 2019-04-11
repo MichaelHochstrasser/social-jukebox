@@ -92,7 +92,7 @@ class ConnectComp extends Component{
     };
 
     render() {
-        if (this.props.event.refreshToken === '' || this.props.event.refreshToken === null) {
+        if (!this.props.event.refreshToken) {
             return (
                 <Grid.Row>
                     <Grid.Column textAlign='center'>
