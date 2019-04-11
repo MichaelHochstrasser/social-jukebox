@@ -4,6 +4,7 @@ import {Button, Container, Grid, Header, Input, Message} from "semantic-ui-react
 import {Image} from "semantic-ui-react";
 import './Home.css';
 import classNames from 'classnames';
+import { BACKEND_BASE_URL } from '../../shared/constants';
 
 export class Home extends Component {
 
@@ -14,7 +15,8 @@ export class Home extends Component {
             eventName: '',
             showError: false,
             disabledClasses: classNames({disabled: false}),
-            grind: ''
+            grind: '',
+            userId: ''
         };
 
         this.onSignIn = this.onSignIn.bind(this);
@@ -43,8 +45,8 @@ export class Home extends Component {
         console.log('Image URL: ' + profile.getImageUrl());
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
         console.log('sub: ' + this.parseJwt(googleUser.getAuthResponse().id_token).sub); // This is null if the 'email' scope is not present.
-        this.setState({grind: profile.getImageUrl()});
         localStorage.setItem('userId', this.parseJwt(googleUser.getAuthResponse().id_token).sub)
+        this.setState({grind: profile.getImageUrl(), userId: localStorage.getItem('userId') });
     }
 
     onSignOut() {
@@ -56,7 +58,7 @@ export class Home extends Component {
 
         const axios = require('axios');
 
-        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/createEvent';
+        const url = `${BACKEND_BASE_URL}/createEvent`;
         const body = {
             name: this.state.eventName,
             userId: localStorage.getItem('userId')
@@ -118,17 +120,17 @@ export class Home extends Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
-                            <div id="googleLogin"></div>
+                            <div textAlign="center" id="googleLogin"></div>
                             <img src={this.state.grind}/>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
+                    {localStorage.getItem('userId')? <Grid.Row>
                         <Grid.Column textAlign='center'>
                             { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
                             <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
                             <Button className={this.state.disabledClasses} id='btnCreateEvent' size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                         </Grid.Column>
-                    </Grid.Row>
+                    </Grid.Row> : <Grid.Row><Grid.Column textAlign='center'><Message color='orange'>Please Log in to create an Event</Message></Grid.Column></Grid.Row>}
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
                             <p>or</p>

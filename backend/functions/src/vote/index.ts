@@ -85,7 +85,8 @@ export default functions.https.onRequest((request, response) => {
                 song.voters.findIndex(voter => voter.sessionId === request.body[voterAttr]) !== -1
               ? [...song.voters.map((voter: Voter) => (voter.sessionId === request.body[voterAttr] ? { ...voter, vote: request.body[voteAttr] } : voter))]
               : [...song.voters, { sessionId: request.body[voterAttr], vote: parseInt(request.body[voteAttr], 10) }],
-            voteCount: song.voteCount + parseInt(request.body[voteAttr], 10)
+            voteCount: (song.voters &&
+              song.voters.findIndex(voter => voter.sessionId === request.body[voterAttr]) !== -1) ? song.voteCount + parseInt(request.body[voteAttr], 10) * 2 : song.voteCount + parseInt(request.body[voteAttr], 10)
           } as Song)
           .then((updatedSong: Song | void) => {
             if (updatedSong) {

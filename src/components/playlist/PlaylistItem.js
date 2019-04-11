@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Button, Icon, Table, Header, Image, Message} from 'semantic-ui-react'
 import axios from 'axios';
 import VoteButton from './VoteButton';
+import { BACKEND_BASE_URL } from '../../shared/constants';
 
 class PlaylistItem extends Component {
 
@@ -26,7 +27,7 @@ class PlaylistItem extends Component {
     };
 
     sendVote(vote) {
-        const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
+        const url = `${BACKEND_BASE_URL}/vote`;
         const body = {
             songId: this.props.songId,
             eventId: this.props.eventId,

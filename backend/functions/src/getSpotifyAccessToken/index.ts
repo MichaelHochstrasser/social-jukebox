@@ -8,6 +8,7 @@ import { HTTP_METHODS } from "../model/CorsConfig";
 import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import { BACKEND_BASE_URL, FRONTEND_BASE_URL } from "../shared/constants";
 
 const fireStoreHelper = new FireStoreHelper();
 
@@ -36,7 +37,7 @@ export default functions.https.onRequest((request, response) => {
     grant_type: "authorization_code",
     code: query["code"],
     redirect_uri:
-      "http://localhost:5000/social-jukebox-zuehlke/us-central1/getSpotifyAccessToken",
+      `${BACKEND_BASE_URL}/getSpotifyAccessToken`,
     client_id: "68fd4d58904748c7bc63c038fa3a5f01",
     client_secret: "4b10c006070340f09fac901f138b56ea"
   });
@@ -87,7 +88,7 @@ export default functions.https.onRequest((request, response) => {
                 return;
               }
               console.log(`event "${updatedEvent.name}" updated`);
-              response.redirect(`http://localhost:3000/event/${eventId}/setting`);
+              response.redirect(`${FRONTEND_BASE_URL}/event/${eventId}/setting`);
               return;
             })
             .catch((updateEventErr: Error) => {
