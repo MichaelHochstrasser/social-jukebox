@@ -59,7 +59,7 @@ export class SettingEvent extends Component {
                             </Grid.Row>
                             <ConnectComp event={this.state.event} eventId={this.props.match.params.id}/>
                             <Grid.Row><Grid.Column textAlign='center'><Header as='h2'>Share your event with friends</Header></Grid.Column></Grid.Row>
-                            <Grid.Row><Grid.Column textAlign='center'><a href=''>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
+                            <Grid.Row><Grid.Column textAlign='center'><a href={`http://localhost:3000/event/${this.props.match.params.id}`}>https://jukebox.dj/event/{this.props.match.params.id}</a></Grid.Column></Grid.Row>
                             <Grid.Row><Grid.Column textAlign='center'><QRCode
                                 value={`https://jukebox.dj/event/${this.props.match.params.id}`}
                                 size={256}
