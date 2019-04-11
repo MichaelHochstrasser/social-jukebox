@@ -1,5 +1,4 @@
 import admin from "./admin";
-
 import {
   Firestore,
   CollectionReference,
@@ -11,8 +10,11 @@ import {
   QueryDocumentSnapshot
 } from "@google-cloud/firestore";
 
+import { SONG_COLLECTION, EVENT_COLLECTION } from "./constants";
+
 import { Event } from "../model/Event";
 import { Song } from "../model/Song";
+
 import { SpotifyHelper } from "./SpotifyApiHelper";
 
 export class FireStoreHelper {
@@ -23,7 +25,7 @@ export class FireStoreHelper {
   }
 
   private getEventDocument(eventId?: string): DocumentReference {
-    const collection: CollectionReference = this.firestore.collection("Events");
+    const collection: CollectionReference = this.firestore.collection(EVENT_COLLECTION);
 
     return eventId ? collection.doc(eventId) : collection.doc();
   }
@@ -62,11 +64,11 @@ export class FireStoreHelper {
               eventId: docRef.id
             } as Event;
           })
-          .catch(err => {
+          .catch((err: Error) => {
             throw err;
           });
       })
-      .catch(playListErr => {
+      .catch((playListErr: Error) => {
         throw playListErr;
       });
   }
@@ -99,6 +101,7 @@ export class FireStoreHelper {
       })
       .catch(err => {
         console.log(err);
+        throw err;
       });
   }
 
@@ -108,16 +111,17 @@ export class FireStoreHelper {
     refreshToken: string,
     validUntil: number
   ): Promise<void> {
-    console.log("We will now update tokens of Events!");
+    console.log("Updating Spotify tokens");
 
     const queryRef: Query = this.firestore
-      .collection("Events")
+      .collection(EVENT_COLLECTION)
       .where("spotifyToken", "==", oldAccessToken);
 
     return queryRef
       .get()
       .then((result: QuerySnapshot) => {
         console.log("Attempting to update these Events", result.docs);
+
         if (result && result.docs) {
           return Promise.all(
             result.docs.map((doc: QueryDocumentSnapshot) => {
@@ -128,7 +132,7 @@ export class FireStoreHelper {
                 validUntil
               } as Event)
                 .then(() => {
-                  console.log("Successfully updated");
+                  console.log("Successfully updated tokens of Event");
                   return Promise.resolve();
                 })
                 .catch(updateError => {
@@ -154,58 +158,102 @@ export class FireStoreHelper {
       });
   }
 
-  private getSongDocument(songId?: string): DocumentReference {
-    const collection: CollectionReference = this.firestore.collection("Songs");
+  private getNewSongDocument(): DocumentReference {
+    const collection: CollectionReference = this.firestore.collection(SONG_COLLECTION);
 
-    return songId ? collection.doc(songId) : collection.doc();
+    return collection.doc();
   }
 
-  addOrUpdateSong(song: Song, spotifyToken?: string): Promise<Song | void> {
-    const docRef: DocumentReference = this.getSongDocument(song.songId);
+  private getExistingSongDocument(spotifySongId: string, eventId: string): Promise<DocumentReference | null> {
+    const collection: CollectionReference = this.firestore.collection(SONG_COLLECTION);
 
-    return new Promise<void>((resolve, reject) => {
-      if (song && song.songId) {
-        // If the song is not new, we don't need to add it to the playlist.
-        resolve();
-      } else if (song && !song.songId && song.playlistId && spotifyToken) {
-        const spotifyHelper = new SpotifyHelper(spotifyToken);
+    // Query for the Song
+    const queryRef: Query = collection.where('spotifySongId', '==', spotifySongId).where('eventId', '==', eventId);
 
-        spotifyHelper
-          .addSongToPlaylist(song.playlistId, song.songId)
-          .then(success => {
-            if (success) {
-              resolve();
-            } else {
-              reject(new Error("Could not add Song to Spotify Playlist!"));
-            }
-          })
-          .catch(err => {
-            throw err;
-          });
+    return queryRef.get().then((result: QuerySnapshot) => {
+      if (result.docs && result.docs.length) {
+        return result.docs[0].ref;
       } else {
-        reject(new Error("Playlist ID or Spotifytoken not available!"));
+        // Can't find the song
+        return null;
       }
-    })
-      .then(() => {
-        return docRef
-          .set({ ...song })
-          .then((result: WriteResult) => {
-            return {
-              ...song,
-              songId: docRef.id
-            } as Song;
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      })
-      .catch(spotifyAddError => {
-        throw spotifyAddError;
-      });
+    }).catch((err) => { throw err; });
   }
 
-  removeSong(songId: string) {
-    const docRef: DocumentReference = this.getSongDocument(songId);
+  addOrUpdateSong(song: Song, spotifyToken?: string, refreshToken?: string, validUntil?: number): Promise<Song | void> {
+    let isNew: boolean;
+
+    return new Promise<DocumentReference>((resolve, reject) => {
+      this.getExistingSongDocument(song.spotifySongId, song.eventId).then((docRef: DocumentReference | null) => {
+        if (docRef) {
+          // Song exists, proceed
+          isNew = false;
+          resolve(docRef);
+        } else {
+          // Song does not exist, return new one
+          isNew = true;
+          resolve(this.getNewSongDocument());
+        }
+      }).catch((err) => {
+        reject(err);
+      });
+    }).then((docRef: DocumentReference) => {
+      // TODO: Separate SongId & internal Id!
+      // TODO: Check if song already exists in event --> then it's and upate! else it's and add!
+      console.log("Add or Update Song", song);
+
+      return new Promise<void>((resolve, reject) => {
+        if (!isNew) {
+          // If the song is not new, we don't need to add it to the playlist.
+          console.log('Song is not new, not adding it to Playlist.');
+          resolve();
+        } else if (isNew && song && song.playlistId && spotifyToken) {
+          console.log('Attempting to add Song to Spotify Playlist.');
+          const spotifyHelper = new SpotifyHelper(spotifyToken, refreshToken, validUntil);
+
+          spotifyHelper
+            .addSongToPlaylist(song.playlistId, song.spotifySongId)
+            .then(success => {
+              if (success) {
+                console.log('Successfully added song to playlist');
+                resolve();
+              } else {
+                console.log('Could not add Song to Spotify Playlist!');
+                reject(new Error("Could not add Song to Spotify Playlist!"));
+              }
+            })
+            .catch((err: Error) => {
+              console.log(err.message);
+              throw err;
+            });
+        } else {
+          console.log('Playlist ID or Spotifytoken not available!');
+          reject(new Error("Playlist ID or Spotifytoken not available!"));
+        }
+      })
+        .then(() => {
+          console.log('Saving Song to FireStore.')
+          return docRef
+            .set({ ...song })
+            .then((result: WriteResult) => {
+              return song;
+            })
+            .catch(err => {
+              console.log(err);
+              throw err;
+            });
+        })
+        .catch(spotifyAddError => {
+          throw spotifyAddError;
+        });
+    }).catch((err: Error) => {
+      console.log('Error getting Song Document');
+      throw err;
+    });
+  }
+
+  /* removeSong(songId: string) {
+    const docRef: DocumentReference = this.getExistingSongDocument(songId);
 
     return docRef
       .delete()
@@ -214,24 +262,26 @@ export class FireStoreHelper {
         console.log(err);
         return false;
       });
-  }
+  } */
 
-  getSong(songId: string) {
-    const docRef: DocumentReference = this.getSongDocument(songId);
-
-    return docRef
-      .get()
-      .then((result: DocumentSnapshot) => {
-        if (result.exists) {
-          return {
-            ...result.data(),
-            songId: result.id
-          } as Song;
-        }
-        return;
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  getSong(spotifySongId: string, eventId: string): Promise<Song | null> {
+    return this.getExistingSongDocument(spotifySongId, eventId).then((docRef: DocumentReference | null) => {
+      if (docRef) {
+        return docRef
+        .get()
+        .then((result: DocumentSnapshot) => {
+          if (result.exists) {
+            return result.data() as Song;
+          } else {
+            return null;
+          }
+        }).catch(err => {
+          console.log(err);
+          throw err;
+        });
+      } else {
+        return null;
+      }
+    }).catch((err: Error) => { console.log(err.message); throw err; });
   }
 }
