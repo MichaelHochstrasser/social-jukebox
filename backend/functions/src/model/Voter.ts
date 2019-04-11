@@ -1,3 +1,4 @@
 export class Voter {
-  public sessionId: string = "";
+  sessionId: string = "";
+  vote: number = 0;
 }

@@ -181,6 +181,7 @@ export class FireStoreHelper {
   }
 
     getPlaylist(eventId: string): Promise<Song[] | void> {
+      console.log('Getting Playlist');
         return this.firestore.collection("Songs")
             .where("eventId", "==", eventId)
             .orderBy("voteCount", "desc")
