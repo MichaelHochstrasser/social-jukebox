@@ -7,7 +7,7 @@ class PlaylistItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            sessionId: 1,         //ToDo: Add sessionId here
+            sessionId: 'theVotar',         //ToDo: Add sessionId here
             showError: false
         };
         this.handleVote = this.handleVote.bind(this);
@@ -15,10 +15,10 @@ class PlaylistItem extends Component {
 
     componentDidMount() {
         //ToDo: Remove Random sessionId
-        this.timerID = setInterval(
+        /*this.timerID = setInterval(
             () => this.randomSession(),
             1000
-        );
+        );*/
     }
 
     componentWillUnmount() {
@@ -35,7 +35,7 @@ class PlaylistItem extends Component {
     handleVote(vote) {
         const url = 'http://localhost:5000/social-jukebox-zuehlke/us-central1/vote';
         const body = {
-            songId: this.props.songId,
+            spotifySongId: this.props.songId,
             eventId: this.props.eventId,
             vote: vote,
             sessionId: this.state.sessionId
@@ -57,13 +57,22 @@ class PlaylistItem extends Component {
         });
     };
 
+    isAlreadyVoted() {
+        for (var voter in this.props.voters) {
+            if (voter==this.state.sessionId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     render() {
         return <Table.Row>
                 <Table.Cell>
                     <Header as='h4' image>
                         <Image src={this.props.image} rounded size='mini' />
                         <Header.Content>
-                            {this.props.songtitle}
+                            {this.props.songtitle} {this.props.songId}
                             <Header.Subheader>{this.props.artist}</Header.Subheader>
                         </Header.Content>
                     </Header>
@@ -71,9 +80,9 @@ class PlaylistItem extends Component {
                 <Table.Cell textAlign='right'>
                     { this.state.showError ? <ErrorMessage message='Error' /> : null }
                     <Button.Group size='mini'>
-                        <Button basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
+                        <Button className={this.isAlreadyVoted()? '' : 'basic'} basic icon color='red' onClick={this.handleVote.bind(this, -1)}><Icon name='thumbs down outline' /></Button>
                         <Button basic color='grey'>{this.props.votes}</Button>
-                        <Button basic icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
+                        <Button className={this.isAlreadyVoted()? '' : 'basic'} icon color='green' onClick={this.handleVote.bind(this, 1)}><Icon name='thumbs up outline' /></Button>
                     </Button.Group>
                 </Table.Cell>
             </Table.Row>
