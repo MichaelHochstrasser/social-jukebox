@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Container, Grid, Icon, Progress, Segment} from "semantic-ui-react";
+import {Container, Grid, Icon, Image, Progress, Segment} from "semantic-ui-react";
 import firebase from "../firebase/Firebase";
+import {BACKEND_BASE_URL} from "../../shared/constants";
 
 export class NowPlaying extends Component {
 
@@ -8,6 +9,8 @@ export class NowPlaying extends Component {
         super(props);
         this.player = null;
         this.trackProgressTimer = {};
+
+        this.resetFinishedSong = this.resetFinishedSong.bind(this);
 
         this.state = {
             currentTrack: {},
@@ -65,7 +68,14 @@ export class NowPlaying extends Component {
                 // Playback status updates
                 this.player.addListener('player_state_changed', state => {
                     if (state) {
-                        this.setState({paused: state.paused, currentTrack: state.track_window.current_track, trackPosition: state.position, trackDuration: state.duration});
+                        let currentTrack = state.track_window.current_track;
+                        if (currentTrack) {
+                            if (this.state.currentTrack.uri && currentTrack.uri !== this.state.currentTrack.uri) {
+                                this.resetFinishedSong(this.state.currentTrack.id)
+                            }
+                            this.setState({currentTrack: currentTrack});
+                        }
+                        this.setState({paused: state.paused, currentTrack: currentTrack, trackPosition: state.position, trackDuration: state.duration});
                     }
                 });
 
@@ -81,17 +91,37 @@ export class NowPlaying extends Component {
             .catch(error => console.log("Error getting document: ", error));
     }
 
+    resetFinishedSong(songId) {
+        const axios = require('axios');
+
+        const url = `${BACKEND_BASE_URL}/resetFinishedSong?eventId=${this.props.eventId}&songId=${songId}`;
+        const header = {
+            'Content-Type': 'application/json'
+
+        };
+
+        axios.get(url, header)
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     render() {
-        const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : '';
-        const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : '';
+        const trackTitle = this.state.currentTrack.name ? this.state.currentTrack.name : this.props.currentSong.title;
+        const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : this.props.currentSong.image;
+        const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : this.props.currentSong.artist;
         const trackProgress = (this.state.trackPosition / this.state.trackDuration) * 100;
+
         return <Segment>
             <Grid className="App" columns={1}>
                 <Grid.Row>
-                    <Container textAlign='center'>
-                        <h2>{this.state.currentTrack.name}</h2>
+                    <Container align='center'>
+                        <h2>{trackTitle}</h2>
                         <p>{artistName}</p>
-                        <div><img src={image}/></div>
+                        <div style={{paddingBottom: '1em'}}><Image src={image} size='medium'/></div>
                         <div><Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' /></div>
                     </Container>
                 </Grid.Row>
