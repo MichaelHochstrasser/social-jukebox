@@ -39,11 +39,14 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
                       event.validUntil
                     );
 
+                    let songsToSend = songs.map(song => song.spotifySongId);
+
+                    if (songs[0].voteCount >= 99999999998) {
+                      songsToSend = songsToSend.slice(1);
+                    }
+
                     return spotifyHelper
-                      .replaceSongsOnPlaylist(
-                        event.playlistId,
-                        songs.map(song => song.spotifySongId)
-                      )
+                      .replaceSongsOnPlaylist(event.playlistId, songsToSend)
                       .then(() => {
                         console.log(
                           "Successfully updated Playlist on Spotify!"
