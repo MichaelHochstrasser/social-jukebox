@@ -71,7 +71,7 @@ export class NowPlaying extends Component {
                         let currentTrack = state.track_window.current_track;
                         if (currentTrack) {
                             if (this.state.currentTrack.uri && currentTrack.uri !== this.state.currentTrack.uri) {
-                                this.resetFinishedSong(this.state.currentTrack.id)
+                                this.resetFinishedSong(currentTrack.id)
                             }
                             this.setState({currentTrack: currentTrack});
                         }
