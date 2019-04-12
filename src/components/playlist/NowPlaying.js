@@ -10,6 +10,8 @@ export class NowPlaying extends Component {
         this.player = null;
         this.trackProgressTimer = {};
 
+        this.resetFinishedSong = this.resetFinishedSong.bind(this);
+
         this.state = {
             currentTrack: {},
             trackPosition: 0,
@@ -66,7 +68,14 @@ export class NowPlaying extends Component {
                 // Playback status updates
                 this.player.addListener('player_state_changed', state => {
                     if (state) {
-                        this.setState({paused: state.paused, currentTrack: state.track_window.current_track, trackPosition: state.position, trackDuration: state.duration});
+                        let currentTrack = state.track_window.current_track;
+                        if (currentTrack) {
+                            if (this.state.currentTrack.uri && currentTrack.uri !== this.state.currentTrack.uri) {
+                                this.resetFinishedSong(this.state.currentTrack.id)
+                            }
+                            this.setState({currentTrack: currentTrack});
+                        }
+                        this.setState({paused: state.paused, currentTrack: currentTrack, trackPosition: state.position, trackDuration: state.duration});
                     }
                 });
 
@@ -85,32 +94,18 @@ export class NowPlaying extends Component {
     resetFinishedSong(songId) {
         const axios = require('axios');
 
-        const url = `${BACKEND_BASE_URL}/resetFinishedSong`;
-        const body = {
-            eventId: this.props.eventId,
-            songId: songId
-        };
+        const url = `${BACKEND_BASE_URL}/resetFinishedSong?eventId=${this.props.eventId}&songId=${songId}`;
         const header = {
             'Content-Type': 'application/json'
+
         };
 
-        axios.post(url, body, header)
+        axios.get(url, header)
             .then((response) => {
                 console.log(response);
-                this.setState({
-                    redirect: true,
-                    target: `/event/${response.data.eventId}/setting`,
-                    showError: false,
-                    disabledClasses: classNames({disabled: false})
-                })
-
             })
             .catch((error) => {
                 console.log(error);
-                this.setState({
-                    showError: true,
-                    disabledClasses: classNames({disabled: false})
-                })
             });
     };
 
