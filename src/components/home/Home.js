@@ -109,7 +109,7 @@ export class Home extends Component {
 
     render() {
 
-        return <Container>
+        return <div><Container>
             <div className="button-container">
                 <Grid>
                     <Grid.Row>
@@ -156,6 +156,7 @@ export class Home extends Component {
                 </Grid>
             </div>
         </Container>
+        </div>
     }
 }
 
