@@ -115,7 +115,7 @@ export class Home extends Component {
                     <Grid.Row>
                         <Grid.Column textAlign='center'>
                             <Header as='h1'>Social Jukebox {this.state.message}</Header>
-                            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/crowd.jpeg'} />
+                            <Image className="title-image" src={process.env.PUBLIC_URL + '/images/vintage-jukebox.jpg'} size='medium' centered />
                             {this.renderRedirect()}
                         </Grid.Column>
                     </Grid.Row>
