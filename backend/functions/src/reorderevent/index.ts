@@ -14,17 +14,17 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
     eventId = message.json.eventId;
   } catch (e) {
     console.error("PubSub message was not JSON", e);
-    return;
+    return false;
   }
 
   if (eventId) {
     const firestoreHelper = new FireStoreHelper();
 
-    firestoreHelper
+    return firestoreHelper
       .getEvent(eventId)
       .then((event: Event | void) => {
         if (event) {
-          firestoreHelper
+          return firestoreHelper
             .getPlaylist(eventId)
             .then((songs: Song[] | void) => {
               if (songs) {
@@ -39,7 +39,7 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
                       event.validUntil
                     );
 
-                    spotifyHelper
+                    return spotifyHelper
                       .replaceSongsOnPlaylist(
                         event.playlistId,
                         songs.map(song => song.spotifySongId)
@@ -59,6 +59,7 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
                 } else {
                   console.error("THIS SHOULD NEVER HAPPEN!");
                   console.log("Nothing to do here, Playlist is empty");
+                  return true;
                 }
               } else {
                 throw new Error("Could not load Songs!");
@@ -66,6 +67,7 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
             })
             .catch(playlistErr => {
               console.log(playlistErr.message);
+              throw playlistErr;
             });
         } else {
           throw new Error("Could not load Event");
@@ -73,9 +75,10 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
       })
       .catch((err: Error) => {
         console.error("Could not load Event", err);
+        return false;
       });
   } else {
     console.error("Event Id was not passed");
-    return;
+    return false;
   }
 });
