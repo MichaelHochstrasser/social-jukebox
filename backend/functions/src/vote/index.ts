@@ -10,7 +10,6 @@ import {
 import { Song } from "../model/Song";
 import { Event } from "../model/Event";
 import { HTTP_METHODS } from "../model/CorsConfig";
-import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 import { Voter } from "../model/Voter";
 
 const firestoreHelper = new FireStoreHelper();

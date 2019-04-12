@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { Event } from "../model/Event";
-import { SpotifyHelper } from "../shared/SpotifyApiHelper";
-import { SpotifyTrack } from "../model/SpotifyTrack";
 import {
   corsEnabledFunctionAuth,
   publishEventReorderMessage
@@ -50,11 +48,7 @@ export default functions.https.onRequest((request, response) => {
           response.status(400).send("Spotify Token Required!");
           return;
         }
-        const spotifyHelper = new SpotifyHelper(
-          event.spotifyToken,
-          event.refreshToken,
-          event.validUntil
-        );
+
         firestoreHelper
           .getPlaylist(eventId)
           .then((playlist: Song[] | void) => {
@@ -120,27 +114,3 @@ export default functions.https.onRequest((request, response) => {
     })
     .catch(err => response.status(500).send(err));
 });
-
-function mapToSpotifyTracks(res: any): SpotifyTrack[] {
-  const tracks: SpotifyTrack[] = [];
-  if (res && res.tracks && res.tracks.items && res.tracks.items.length > 0) {
-    res.tracks.items.forEach((track: any) => {
-      const imageIndex: number =
-        track.album.images.length > 2
-          ? track.album.images.length - 2
-          : track.album.images.length - 1;
-      tracks.push({
-        title: track.name,
-        popularity: track.popularity,
-        id: track.id,
-        duration_ms: track.duration_ms,
-        artist: track.artists
-          .map((artist: { name: string }) => artist.name)
-          .join(","),
-        image: track.album.images[imageIndex].url
-      });
-    });
-  }
-
-  return tracks;
-}
