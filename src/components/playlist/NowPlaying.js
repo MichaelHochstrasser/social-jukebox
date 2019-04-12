@@ -110,6 +110,9 @@ export class NowPlaying extends Component {
     };
 
     render() {
+        if (!this.props.currentSong) {
+            return <div></div>;
+        }
         const trackTitle = this.state.currentTrack.name ? this.state.currentTrack.name : this.props.currentSong.title;
         const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : this.props.currentSong.image;
         const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : this.props.currentSong.artist;
