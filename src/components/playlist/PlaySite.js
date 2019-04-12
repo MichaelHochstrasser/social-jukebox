@@ -59,7 +59,7 @@ export class PlaySite extends Component {
                 let songs = [];
                 querySnapshot.forEach(doc => songs.push(doc.data()));
 
-                this.setState({songs: songs.filter((item, index) => index > 0), currentSong: songs[0]});
+                this.setState({songs: songs.filter((item, index) => item.voteCount < 9999999999), currentSong: songs[0]});
             })
             .catch(function(error) {
                 console.log("Error getting documents: ", error);
