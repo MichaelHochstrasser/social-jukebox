@@ -3,7 +3,10 @@ import { FireStoreHelper } from "../shared/FirestoreHelper";
 import { Event } from "../model/Event";
 import { SpotifyHelper } from "../shared/SpotifyApiHelper";
 import { SpotifyTrack } from "../model/SpotifyTrack";
-import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import {
+  corsEnabledFunctionAuth,
+  publishEventReorderMessage
+} from "../shared/CloudFunctionsUtils";
 import { HTTP_METHODS } from "../model/CorsConfig";
 import { checkParamsExist } from "../shared/PropertyChecker";
 import { Song } from "../model/Song";
@@ -60,41 +63,38 @@ export default functions.https.onRequest((request, response) => {
             console.log(event.playlistId);
             if (playlist && event && event.playlistId) {
               nextTrack = playlist[1];
-              spotifyHelper
-                .reorderSongsOnPlaylist(event.playlistId, 0, playlist.length)
-                .then(_ => {
+              firestoreHelper
+                .getSong(songId, eventId)
+                .then(song => {
+                  if (!song) {
+                    return;
+                  }
                   firestoreHelper
-                    .getSong(songId, eventId)
-                    .then(song => {
-                      if (!song) {
-                        return;
+                    .addOrUpdateSong({
+                      ...song,
+                      ...{
+                        voteCount: 0,
+                        voters: [{}],
+                        dateAdded: Timestamp.now()
                       }
+                    } as Song)
+                    .then(() => {
                       firestoreHelper
                         .addOrUpdateSong({
-                          ...song,
+                          ...nextTrack,
                           ...{
-                            voteCount: 0,
-                            voters: [{}],
-                            dateAdded: Timestamp.now()
+                            voteCount: 99999999999,
+                            voters: [{}]
                           }
                         } as Song)
-                        .then((res: any) => {
-                          firestoreHelper
-                            .addOrUpdateSong({
-                              ...nextTrack,
-                              ...{
-                                voteCount: 99999999999,
-                                voters: [{}]
-                              }
-                            } as Song)
-                            .then((res: any) =>
-                              response
-                                .status(200)
-                                .send(mapToSpotifyTracks(res.data))
-                            )
-                            .catch((err: any) => {
-                              console.error(err.response);
-                              response.status(500).send("Internal Error");
+                        .then(() => {
+                          publishEventReorderMessage(eventId)
+                            .then(() => {
+                              response.status(200).send();
+                              return;
+                            })
+                            .catch(err => {
+                              throw err;
                             });
                         })
                         .catch((err: any) => {
@@ -107,8 +107,9 @@ export default functions.https.onRequest((request, response) => {
                       response.status(500).send("Internal Error");
                     });
                 })
-                .catch((msg: Error) => {
-                  new Error("Could not update Playlist on Spotify");
+                .catch((err: any) => {
+                  console.error(err.response);
+                  response.status(500).send("Internal Error");
                 });
             }
           })
