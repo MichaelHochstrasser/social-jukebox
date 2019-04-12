@@ -52,68 +52,73 @@ export class NowPlaying extends Component {
   }
 
   setUpSpotifyPlayer() {
-    const eventDocRef = firebase
-      .firestore()
-      .collection("Events")
-      .doc(this.props.eventId);
-    eventDocRef
-      .get()
-      .then(doc => {
-        let token = doc.data().spotifyToken;
-        this.player = new window.Spotify.Player({
-          name: "Social Jukebox",
-          getOAuthToken: cb => {
-            cb(token);
-          }
-        });
-
-        // Error handling
-        this.player.addListener("initialization_error", ({ message }) =>
-          console.error(message)
-        );
-        this.player.addListener("authentication_error", ({ message }) =>
-          console.error(message)
-        );
-        this.player.addListener("account_error", ({ message }) =>
-          console.error(message)
-        );
-        this.player.addListener("playback_error", ({ message }) =>
-          console.error(message)
-        );
-
-        // Playback status updates
-        this.player.addListener("player_state_changed", state => {
-          if (state) {
-            let currentTrack = state.track_window.current_track;
-            if (currentTrack) {
-              if (currentTrack.uri !== this.state.currentTrack.uri) {
-                this.resetFinishedSong(currentTrack.id);
-              }
-              this.setState({ currentTrack: currentTrack });
+    if (!this.player) {
+      const eventDocRef = firebase
+        .firestore()
+        .collection("Events")
+        .doc(this.props.eventId);
+      eventDocRef
+        .get()
+        .then(doc => {
+          let token = doc.data().spotifyToken;
+          this.player = new window.Spotify.Player({
+            name: "Social Jukebox",
+            getOAuthToken: cb => {
+              cb(token);
             }
-            this.setState({
-              paused: state.paused,
-              currentTrack: currentTrack,
-              trackPosition: state.position,
-              trackDuration: state.duration
-            });
-          }
-        });
+          });
 
-        // Ready
-        this.player.addListener("ready", ({ device_id }) =>
-          console.log("Ready with Device ID", device_id)
-        );
+          // Error handling
+          this.player.addListener("initialization_error", ({ message }) =>
+            console.error(message)
+          );
+          this.player.addListener("authentication_error", ({ message }) =>
+            console.error(message)
+          );
+          this.player.addListener("account_error", ({ message }) =>
+            console.error(message)
+          );
+          this.player.addListener("playback_error", ({ message }) =>
+            console.error(message)
+          );
 
-        // Not Ready
-        this.player.addListener("not_ready", ({ device_id }) =>
-          console.log("Device ID has gone offline", device_id)
-        );
+          // Playback status updates
+          this.player.addListener("player_state_changed", state => {
+            if (state) {
+              let currentTrack = state.track_window.current_track;
+              if (currentTrack) {
+                if (currentTrack.uri !== this.state.currentTrack.uri) {
+                  console.log("Updating Currently Playing Track", {
+                    current: currentTrack,
+                    last: this.state.currentTrack
+                  });
+                  this.resetFinishedSong(currentTrack.id);
+                }
+              }
+              this.setState({
+                paused: state.paused,
+                currentTrack: currentTrack,
+                trackPosition: state.position,
+                trackDuration: state.duration
+              });
+            }
+          });
 
-        // Connect to the player!
-        this.player.connect();
-      })
-      .catch(error => console.log("Error getting document: ", error));
+          // Ready
+          this.player.addListener("ready", ({ device_id }) =>
+            console.log("Ready with Device ID", device_id)
+          );
+
+          // Not Ready
+          this.player.addListener("not_ready", ({ device_id }) =>
+            console.log("Device ID has gone offline", device_id)
+          );
+
+          // Connect to the player!
+          this.player.connect();
+        })
+        .catch(error => console.log("Error getting document: ", error));
+    }
   }
 
   resetFinishedSong(songId) {
