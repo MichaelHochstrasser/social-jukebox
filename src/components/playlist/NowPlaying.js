@@ -124,8 +124,7 @@ export class NowPlaying extends Component {
                     <Container align='center'>
                         <h2>{trackTitle}</h2>
                         <p>{artistName}</p>
-                        <div style={{paddingBottom: '1em'}}><Image src={image} size='medium'/></div>
-                        <div><Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' /></div>
+                        <div style={{paddingBottom: '1em'}}><Image src={image} size='small'/></div>
                     </Container>
                 </Grid.Row>
                 <Grid.Row>

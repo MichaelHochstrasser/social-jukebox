@@ -2,12 +2,14 @@ import * as functions from "firebase-functions";
 
 import { checkParamsExist } from "../shared/PropertyChecker";
 import { FireStoreHelper } from "../shared/FirestoreHelper";
-import { corsEnabledFunctionAuth } from "../shared/CloudFunctionsUtils";
+import {
+  corsEnabledFunctionAuth,
+  publishEventReorderMessage
+} from "../shared/CloudFunctionsUtils";
 
 import { Song } from "../model/Song";
 import { Event } from "../model/Event";
 import { HTTP_METHODS } from "../model/CorsConfig";
-import {SpotifyHelper} from "../shared/SpotifyApiHelper";
 import { Voter } from "../model/Voter";
 
 const firestoreHelper = new FireStoreHelper();
@@ -17,9 +19,6 @@ export default functions.https.onRequest((request, response) => {
   const eventIdAttr = "eventId";
   const voteAttr = "vote";
   const voterAttr = "sessionId";
-  let currentEvent: Event;
-  let previousPlaylist: Song[] = [];
-  let currentPlaylist: Song[] = [];
 
   corsEnabledFunctionAuth(request, response, {
     methods: [HTTP_METHODS.POST]
@@ -52,16 +51,12 @@ export default functions.https.onRequest((request, response) => {
       if (!event || event.eventId !== request.body[eventIdAttr]) {
         throw new Error("Event not found");
       } else {
-          currentEvent = event;
-          return firestoreHelper.getPlaylist(event.eventId || '');
+        return firestoreHelper.getSong(
+          request.body[songIdAttr],
+          request.body[eventIdAttr]
+        );
       }
     })
-      .then((playlist: Song[] |void ) => {
-          if(playlist) {
-            previousPlaylist = playlist;
-          }
-          return firestoreHelper.getSong(request.body[songIdAttr], request.body[eventIdAttr]);
-      })
     .then((song: Song | null) => {
       if (
         !song ||
@@ -70,59 +65,61 @@ export default functions.https.onRequest((request, response) => {
       ) {
         throw new Error("Song not found or not consistent");
       } else if (
-       song.voters &&
-       song.voters.findIndex(voter => voter.sessionId === request.body[voterAttr] && voter.vote === parseInt(request.body[voteAttr], 10)) !== -1
-     ) {
-       // Voter has already voted
-       response.status(200).json({ status: "already_voted" });
-       return;
-     } else {
+        song.voters &&
+        song.voters.findIndex(
+          voter =>
+            voter.sessionId === request.body[voterAttr] &&
+            voter.vote === parseInt(request.body[voteAttr], 10)
+        ) !== -1
+      ) {
+        // Voter has already voted
+        response.status(200).json({ status: "already_voted" });
+        return;
+      } else {
         return firestoreHelper
           .addOrUpdateSong({
             ...song,
-            voters: 
-                song.voters &&
-                song.voters.findIndex(voter => voter.sessionId === request.body[voterAttr]) !== -1
-              ? [...song.voters.map((voter: Voter) => (voter.sessionId === request.body[voterAttr] ? { ...voter, vote: request.body[voteAttr] } : voter))]
-              : [...song.voters, { sessionId: request.body[voterAttr], vote: parseInt(request.body[voteAttr], 10) }],
-            voteCount: (song.voters &&
-              song.voters.findIndex(voter => voter.sessionId === request.body[voterAttr]) !== -1) ? song.voteCount + parseInt(request.body[voteAttr], 10) * 2 : song.voteCount + parseInt(request.body[voteAttr], 10)
+            voters:
+              song.voters &&
+              song.voters.findIndex(
+                voter => voter.sessionId === request.body[voterAttr]
+              ) !== -1
+                ? [
+                    ...song.voters.map((voter: Voter) =>
+                      voter.sessionId === request.body[voterAttr]
+                        ? { ...voter, vote: request.body[voteAttr] }
+                        : voter
+                    )
+                  ]
+                : [
+                    ...song.voters,
+                    {
+                      sessionId: request.body[voterAttr],
+                      vote: parseInt(request.body[voteAttr], 10)
+                    }
+                  ],
+            voteCount:
+              song.voters &&
+              song.voters.findIndex(
+                voter => voter.sessionId === request.body[voterAttr]
+              ) !== -1
+                ? song.voteCount + parseInt(request.body[voteAttr], 10) * 2
+                : song.voteCount + parseInt(request.body[voteAttr], 10)
           } as Song)
           .then((updatedSong: Song | void) => {
             if (updatedSong) {
-              return firestoreHelper.getPlaylist(song.eventId);
+              publishEventReorderMessage(request.body[eventIdAttr])
+                .then(() => {
+                  response.status(200).send();
+                  return;
+                })
+                .catch(err => {
+                  throw err;
+                });
             } else {
               throw new Error("Error while updating the song");
             }
           })
-          .then((playlist: Song[] | void) => {
-              if (playlist) {
-                  currentPlaylist = playlist;
-              }
-              console.log('Checking if is in Order!');
-            if(!isInOrder(currentPlaylist, previousPlaylist)) {
-                const songToMove = previousPlaylist.findIndex(item => item.spotifySongId === song.spotifySongId);
-                let insertBefore = currentPlaylist.findIndex(item => item.spotifySongId === song.spotifySongId);
-                // because of insertion *before* song we need to add one in case song needs to be at the end!
-                insertBefore = insertBefore === currentPlaylist.length - 1 ? insertBefore + 1 : insertBefore;
-                const spotifyHelper = new SpotifyHelper(currentEvent.spotifyToken, currentEvent.refreshToken, currentEvent.validUntil);
-                console.log('song to move: ' + songToMove);
-                console.log('insert Before:' + insertBefore);
-                spotifyHelper.reorderSongsOnPlaylist(song.playlistId, songToMove, insertBefore)
-                    .then(_ => {
-                      response.status(200).send({status: "success"});
-                      return;
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        response.status(500).send({status: "could not update spotify order"})
-                    })
-            }else {
-              console.log('Still in order, no need to do anything.');
-              response.status(200).send({status: "success"});
-                      return;
-            }
-        })
           .catch(err => {
             throw err;
           });
@@ -132,7 +129,3 @@ export default functions.https.onRequest((request, response) => {
       response.status(500).send(msg.message);
     });
 });
-
-function isInOrder(currentPlaylist: Song[], previousPlaylist: Song[]) : boolean {
-    return currentPlaylist.every((item, index) => previousPlaylist[index].spotifySongId === item.spotifySongId)
-}
