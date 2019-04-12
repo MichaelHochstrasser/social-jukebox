@@ -16,7 +16,8 @@ export class Home extends Component {
             showError: false,
             disabledClasses: classNames({disabled: false}),
             grind: '',
-            userId: ''
+            userId: '',
+            username: ''
         };
 
         this.onSignIn = this.onSignIn.bind(this);
@@ -46,7 +47,7 @@ export class Home extends Component {
         console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
         console.log('sub: ' + this.parseJwt(googleUser.getAuthResponse().id_token).sub); // This is null if the 'email' scope is not present.
         localStorage.setItem('userId', this.parseJwt(googleUser.getAuthResponse().id_token).sub)
-        this.setState({grind: profile.getImageUrl(), userId: localStorage.getItem('userId') });
+        this.setState({grind: profile.getImageUrl(), userId: localStorage.getItem('userId'), username: profile.getName()});
     }
 
     onSignOut() {
@@ -118,25 +119,40 @@ export class Home extends Component {
                             {this.renderRedirect()}
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column textAlign='center'>
-                            <div id="googleLogin"></div>
-                            <img alt='Your photo' src={this.state.grind}/>
-                        </Grid.Column>
-                    </Grid.Row>
-                    {localStorage.getItem('userId')? <Grid.Row>
-                        <Grid.Column textAlign='center'>
-                            { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
-                            <Input size='massive' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
-                            <Button className={this.state.disabledClasses} id='btnCreateEvent' size='massive' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
-                        </Grid.Column>
-                    </Grid.Row> : <Grid.Row><Grid.Column textAlign='center'><Message color='orange'>Please Log in to create an Event</Message></Grid.Column></Grid.Row>}
-                    <Grid.Row>
-                        <Grid.Column textAlign='center'>
-                            <p>or</p>
-                            <Link to={'/event'}>Choose an existing event</Link>
-                        </Grid.Column>
-                    </Grid.Row>
+                    {localStorage.getItem('userId')?
+                        <Container>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column textAlign='center'>
+                                        <p>Logged in with google account of {this.state.username}</p>
+                                        { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
+                                        <Input action size='big' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
+                                        <Button className={this.state.disabledClasses} id='btnCreateEvent' size='big' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Column textAlign='center'>
+                                        <p>or</p>
+                                    <Link to={'/event'}>Choose an existing event</Link>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Container>:
+                        <Container>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column textAlign='center'>
+                                        <Message color='orange'>Please Log in to create an Event</Message>
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Column textAlign='center'>
+                                        <div id="googleLogin"></div>
+                                        <img alt='Your photo' hidden src={this.state.grind}/>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Container>}
                 </Grid>
             </div>
         </Container>
