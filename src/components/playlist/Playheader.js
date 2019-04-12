@@ -17,13 +17,13 @@ export class Playheader extends Component {
       <Segment>
         <Grid className="App" columns={1}>
           <Grid.Row>
-            <Container align="center">
+            <Grid.Column align="center">
               <h2>{currentlyPlayingSong.title}</h2>
               <p>{currentlyPlayingSong.artist}</p>
               <div style={{ paddingBottom: "1em" }}>
                 <Image src={currentlyPlayingSong.image} size="small" />
               </div>
-            </Container>
+            </Grid.Column>
           </Grid.Row>
           {trackProgress ? (
             <Grid.Row>
