@@ -126,7 +126,7 @@ export class Home extends Component {
                                     <Grid.Column textAlign='center'>
                                         <p>Logged in with {this.state.username? this.state.username : 'your'} google account</p>
                                         { this.state.showError ? <ErrorMessage message='Error while creating event' /> : null }
-                                        <Input action size='big' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
+                                        <Input size='big' icon='music' iconPosition='left' placeholder='Eventname' value={this.state.eventName} onChange={this.updateInputValue}/>
                                         <Button className={this.state.disabledClasses} id='btnCreateEvent' size='big' color='green' onClick={this.createEvent.bind(this)}>Create</Button>
                                     </Grid.Column>
                                 </Grid.Row>
