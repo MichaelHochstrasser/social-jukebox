@@ -18,6 +18,7 @@ export class PlaySite extends Component {
         this.state = {
             event: null,
             songs: [],
+            currentSong: {},
             isModalOpen: false,
             sessionId: ''
         };
@@ -57,7 +58,8 @@ export class PlaySite extends Component {
             .then(querySnapshot => {
                 let songs = [];
                 querySnapshot.forEach(doc => songs.push(doc.data()));
-                this.setState({songs: songs});
+
+                this.setState({songs: songs.filter((item, index) => index > 0), currentSong: songs[0]});
             })
             .catch(function(error) {
                 console.log("Error getting documents: ", error);
@@ -95,7 +97,7 @@ export class PlaySite extends Component {
         return <div>
             <MenuBasic eventId={eventId} />
             <Container>
-                <NowPlaying eventId={eventId} />
+                <NowPlaying eventId={eventId} currentSong={this.state.currentSong} />
                 { event && <h1>{event}</h1> }
                 <Playlist eventId={this.props.match.params.id} closeModal={this.closeModal.bind(this)} openModal={this.openModal.bind(this)} isModalOpen={this.state.isModalOpen} songs={this.state.songs} updatePlaylist={this.updatePlaylist()} />
             </Container>

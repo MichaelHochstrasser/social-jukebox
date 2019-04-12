@@ -38,6 +38,7 @@ export default functions.https.onRequest((request, response) => {
   const eventId = request.query[eventIdParam];
   const songId = request.query[songIdParam];
 
+  let nextTrack: Song;
   firestoreHelper
     .getEvent(eventId)
     .then((event: Event | void) => {
@@ -57,6 +58,7 @@ export default functions.https.onRequest((request, response) => {
               console.log(event);
               console.log(event.playlistId);
             if(playlist && event && event.playlistId) {
+              nextTrack = playlist[1];
               spotifyHelper.reorderSongsOnPlaylist(event.playlistId, 0, playlist.length)
                   .then(_ => {
                       firestoreHelper.getSong(songId, eventId)
@@ -69,9 +71,19 @@ export default functions.https.onRequest((request, response) => {
                                   voters: [{}],
                                   dateAdded: Timestamp.now()
                               }} as Song)
-                                  .then((res: any) =>
-                                      response.status(200).send(mapToSpotifyTracks(res.data))
-                                  )
+                                  .then((res: any) => {
+                                    firestoreHelper.addOrUpdateSong({...nextTrack, ...{
+                                        voteCount: 99999999999,
+                                        voters: [{}]
+                                    }} as Song)
+                                        .then((res: any) =>
+                                            response.status(200).send(mapToSpotifyTracks(res.data))
+                                        )
+                                        .catch((err: any) => {
+                                            console.error(err.response);
+                                            response.status(500).send("Internal Error");
+                                        });
+                                  })
                                   .catch((err: any) => {
                                       console.error(err.response);
                                       response.status(500).send("Internal Error");

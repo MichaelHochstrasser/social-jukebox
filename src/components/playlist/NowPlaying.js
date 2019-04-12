@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Grid, Icon, Progress, Segment} from "semantic-ui-react";
+import {Container, Grid, Icon, Image, Progress, Segment} from "semantic-ui-react";
 import firebase from "../firebase/Firebase";
 import {BACKEND_BASE_URL} from "../../shared/constants";
 
@@ -110,16 +110,18 @@ export class NowPlaying extends Component {
     };
 
     render() {
-        const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : '';
-        const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : '';
+        const trackTitle = this.state.currentTrack.name ? this.state.currentTrack.name : this.props.currentSong.title;
+        const image = this.state.currentTrack.album ? this.state.currentTrack.album.images[0].url : this.props.currentSong.image;
+        const artistName = this.state.currentTrack.artists ? this.state.currentTrack.artists[0].name : this.props.currentSong.artist;
         const trackProgress = (this.state.trackPosition / this.state.trackDuration) * 100;
+
         return <Segment>
             <Grid className="App" columns={1}>
                 <Grid.Row>
-                    <Container textAlign='center'>
-                        <h2>{this.state.currentTrack.name}</h2>
+                    <Container align='center'>
+                        <h2>{trackTitle}</h2>
                         <p>{artistName}</p>
-                        <div><img src={image}/></div>
+                        <div style={{paddingBottom: '1em'}}><Image src={image} size='medium'/></div>
                         <div><Icon name={(this.state.paused) ? 'play' : 'pause'} size='big' /></div>
                     </Container>
                 </Grid.Row>
