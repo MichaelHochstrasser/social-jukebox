@@ -35,3 +35,5 @@ export const BACKEND_BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://us-central1-social-jukebox-zuehlke.cloudfunctions.net"
     : "http://localhost:5000/social-jukebox-zuehlke/us-central1";
+
+export const REORDER_TOPIC = "reorder-spotify-playlist";
