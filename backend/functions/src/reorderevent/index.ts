@@ -42,7 +42,7 @@ export default functions.pubsub.topic(REORDER_TOPIC).onPublish(message => {
                     let songsToSend = songs.map(song => song.spotifySongId);
 
                     if (songs[0].voteCount >= 99999999998) {
-                      songsToSend = songsToSend.slice(1);
+                      songsToSend = songsToSend.slice(1, 99);
                     }
 
                     return spotifyHelper
