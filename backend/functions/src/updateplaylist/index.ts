@@ -39,7 +39,7 @@ export default functions.https.onRequest((request, response) => {
   const eventId = request.query[eventIdParam];
   const songId = request.query[songIdParam];
 
-  let nextTrack: Song;
+  let lastTrack: Song | undefined;
   firestoreHelper
     .getEvent(eventId)
     .then((event: Event | void) => {
@@ -56,7 +56,7 @@ export default functions.https.onRequest((request, response) => {
             console.log(event);
             console.log(event.playlistId);
             if (playlist && event && event.playlistId) {
-              nextTrack = playlist[1];
+              lastTrack = playlist.find(song => song.voteCount >= 99999999998);
               firestoreHelper
                 .getSong(songId, eventId)
                 .then(song => {
@@ -67,20 +67,32 @@ export default functions.https.onRequest((request, response) => {
                     .addOrUpdateSong({
                       ...song,
                       ...{
-                        voteCount: 0,
-                        voters: [{}],
-                        dateAdded: Timestamp.now()
+                        voteCount: 99999999999,
+                        voters: [{}]
                       }
                     } as Song)
                     .then(() => {
-                      firestoreHelper
-                        .addOrUpdateSong({
-                          ...nextTrack,
-                          ...{
-                            voteCount: 99999999999,
-                            voters: [{}]
-                          }
-                        } as Song)
+                      new Promise((resolve, reject) => {
+                        if (lastTrack) {
+                          firestoreHelper
+                            .addOrUpdateSong({
+                              ...lastTrack,
+                              ...{
+                                voteCount: 0,
+                                voters: [{}],
+                                dateAdded: Timestamp.now()
+                              }
+                            } as Song)
+                            .then(() => {
+                              resolve();
+                            })
+                            .catch(() => {
+                              reject();
+                            });
+                        } else {
+                          resolve();
+                        }
+                      })
                         .then(() => {
                           publishEventReorderMessage(eventId)
                             .then(() => {
