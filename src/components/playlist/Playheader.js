@@ -1,35 +1,43 @@
-import React, { Component } from 'react';
-import {Container, Grid, Icon, Progress, Segment} from "semantic-ui-react";
-import firebase from "../firebase/Firebase";
+import React, { Component } from "react";
+import { Container, Grid, Progress, Segment, Image } from "semantic-ui-react";
 
 export class Playheader extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-    constructor(props) {
-        super(props);
-        this.db = firebase.firestore().collection('test');
-        this.state = {
-            currentSong: {title: 'Hit me baby one more time', artist: 'Britney', time: '2:15'}
-        };
+  render() {
+    const { currentlyPlayingSong, trackProgress, time } = this.props;
+
+    if (!currentlyPlayingSong) {
+      return null;
     }
 
-    render() {
-        return <Segment>
-            <Grid>
-                <Grid.Row>
-                    <Grid.Column textAlign='center'>
-                        <h2>{this.state.currentTrack.title}</h2>
-                        <p>{this.state.currentTrack.artist}</p>
-                        <Icon name='play' />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <Progress percent={10} size='tiny'>
-                            {this.state.currentTrack.time}
-                        </Progress>
-                    </Grid.Column>
-                </Grid.Row>
-            </Grid>
-        </Segment>
-    }
+    return (
+      <Segment>
+        <Grid className="App" columns={1}>
+          <Grid.Row>
+            <Container align="center">
+              <h2>{currentlyPlayingSong.title}</h2>
+              <p>{currentlyPlayingSong.artist}</p>
+              <div style={{ paddingBottom: "1em" }}>
+                <Image src={currentlyPlayingSong.image} size="small" />
+              </div>
+            </Container>
+          </Grid.Row>
+          {trackProgress ? (
+            <Grid.Row>
+              <Grid.Column>
+                <Progress percent={trackProgress} size="tiny">
+                  {time}
+                </Progress>
+              </Grid.Column>
+            </Grid.Row>
+          ) : (
+            <div />
+          )}
+        </Grid>
+      </Segment>
+    );
+  }
 }

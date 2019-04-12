@@ -9,6 +9,7 @@ import {
 } from "semantic-ui-react";
 import firebase from "../firebase/Firebase";
 import { BACKEND_BASE_URL } from "../../shared/constants";
+import { Playheader } from "./Playheader";
 
 export class NowPlaying extends Component {
   constructor(props) {
@@ -142,10 +143,12 @@ export class NowPlaying extends Component {
   }
 
   render() {
-    if (!this.props.currentSong) {
+    const { currentSong } = this.props;
+
+    if (!currentSong) {
       return <div />;
     }
-    const trackTitle = this.state.currentTrack.name
+    /*     const trackTitle = this.state.currentTrack.name
       ? this.state.currentTrack.name
       : this.props.currentSong.title;
     const image = this.state.currentTrack.album
@@ -153,31 +156,16 @@ export class NowPlaying extends Component {
       : this.props.currentSong.image;
     const artistName = this.state.currentTrack.artists
       ? this.state.currentTrack.artists[0].name
-      : this.props.currentSong.artist;
+      : this.props.currentSong.artist; */
     const trackProgress =
       (this.state.trackPosition / this.state.trackDuration) * 100;
 
     return (
-      <Segment>
-        <Grid className="App" columns={1}>
-          <Grid.Row>
-            <Container align="center">
-              <h2>{trackTitle}</h2>
-              <p>{artistName}</p>
-              <div style={{ paddingBottom: "1em" }}>
-                <Image src={image} size="small" />
-              </div>
-            </Container>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <Progress percent={trackProgress} size="tiny">
-                {this.state.currentTrack.time}
-              </Progress>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Segment>
+      <Playheader
+        currentlyPlayingSong={currentSong}
+        trackProgress={trackProgress}
+        time={this.state.currentTrack.time}
+      />
     );
   }
 }
