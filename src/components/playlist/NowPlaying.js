@@ -15,7 +15,7 @@ export class NowPlaying extends Component {
   constructor(props) {
     super(props);
     this.player = null;
-    this.trackProgressTimer = {};
+    this.trackProgressTimer = null;
 
     this.resetFinishedSong = this.resetFinishedSong.bind(this);
 
@@ -37,9 +37,35 @@ export class NowPlaying extends Component {
     const timeInterval = 250;
     this.trackProgressTimer = window.setInterval(() => {
       if (!this.state.paused) {
-        this.state.trackPosition += timeInterval;
+        this.setState({
+          trackPosition: (this.state.trackPosition += timeInterval)
+        });
       }
     }, timeInterval);
+  }
+
+  setUpSpotifyPlayer() {
+    const eventDocRef = firebase
+      .firestore()
+      .collection("Events")
+      .doc(this.props.eventId);
+    eventDocRef
+      .get()
+      .then(doc => {
+        let token = doc.data().spotifyToken;
+        this.player = new window.Spotify.Player({
+          name: "Social Jukebox",
+          getOAuthToken: cb => {
+            cb(token);
+          }
+        });
+
+        this.addPlayerListeners();
+
+        // Connect to the player!
+        this.player.connect();
+      })
+      .catch(error => console.log("Error getting document: ", error));
   }
 
   componentWillUnmount() {
@@ -47,78 +73,78 @@ export class NowPlaying extends Component {
 
     if (this.player) {
       this.player.disconnect();
+      this.removePlayerListeners();
+      this.player = null;
     }
     let spotifyPlayerScriptyTag = document.getElementById("spotifyPlayer");
     document.body.removeChild(spotifyPlayerScriptyTag);
   }
 
-  setUpSpotifyPlayer() {
-    if (!this.player) {
-      const eventDocRef = firebase
-        .firestore()
-        .collection("Events")
-        .doc(this.props.eventId);
-      eventDocRef
-        .get()
-        .then(doc => {
-          let token = doc.data().spotifyToken;
-          this.player = new window.Spotify.Player({
-            name: "Social Jukebox",
-            getOAuthToken: cb => {
-              cb(token);
-            }
-          });
+  addPlayerListeners() {
+    if (this.player) {
+      // Error handling
+      this.player.addListener("initialization_error", ({ message }) =>
+        console.error(message)
+      );
+      this.player.addListener("authentication_error", ({ message }) =>
+        console.error(message)
+      );
+      this.player.addListener("account_error", ({ message }) =>
+        console.error(message)
+      );
+      this.player.addListener("playback_error", ({ message }) =>
+        console.error(message)
+      );
 
-          // Error handling
-          this.player.addListener("initialization_error", ({ message }) =>
-            console.error(message)
-          );
-          this.player.addListener("authentication_error", ({ message }) =>
-            console.error(message)
-          );
-          this.player.addListener("account_error", ({ message }) =>
-            console.error(message)
-          );
-          this.player.addListener("playback_error", ({ message }) =>
-            console.error(message)
-          );
-
-          // Playback status updates
-          this.player.addListener("player_state_changed", state => {
-            if (state) {
-              let currentTrack = state.track_window.current_track;
-              if (currentTrack) {
-                if (currentTrack.uri !== this.state.currentTrack.uri) {
-                  console.log("Updating Currently Playing Track", {
-                    current: currentTrack,
-                    last: this.state.currentTrack
-                  });
-                  this.resetFinishedSong(currentTrack.id);
-                }
-              }
+      // Playback status updates
+      this.player.addListener("player_state_changed", state => {
+        if (state) {
+          let currentTrack = state.track_window.current_track;
+          if (currentTrack) {
+            if (currentTrack.uri !== this.state.currentTrack.uri) {
+              console.log("Updating Currently Playing Track", {
+                current: currentTrack.uri,
+                last: this.state.currentTrack
+                  ? this.state.currentTrack.uri
+                  : "no track"
+              });
+              this.resetFinishedSong(currentTrack.id);
+              this.setState({
+                currentTrack
+              });
+            } else {
               this.setState({
                 paused: state.paused,
-                currentTrack: currentTrack,
+                currentTrack,
                 trackPosition: state.position,
                 trackDuration: state.duration
               });
             }
-          });
+          }
+        }
+      });
 
-          // Ready
-          this.player.addListener("ready", ({ device_id }) =>
-            console.log("Ready with Device ID", device_id)
-          );
+      // Ready
+      this.player.addListener("ready", ({ device_id }) =>
+        console.log("Ready with Device ID", device_id)
+      );
 
-          // Not Ready
-          this.player.addListener("not_ready", ({ device_id }) =>
-            console.log("Device ID has gone offline", device_id)
-          );
+      // Not Ready
+      this.player.addListener("not_ready", ({ device_id }) =>
+        console.log("Device ID has gone offline", device_id)
+      );
+    }
+  }
 
-          // Connect to the player!
-          this.player.connect();
-        })
-        .catch(error => console.log("Error getting document: ", error));
+  removePlayerListeners() {
+    if (this.player) {
+      this.player.removeListener("initialization_error");
+      this.player.removeListener("authentication_error");
+      this.player.removeListener("account_error");
+      this.player.removeListener("playback_error");
+      this.player.removeListener("player_state_changed");
+      this.player.removeListener("ready");
+      this.player.removeListener("not_ready");
     }
   }
 
@@ -164,7 +190,9 @@ export class NowPlaying extends Component {
       <Playheader
         currentlyPlayingSong={currentSong}
         trackProgress={trackProgress}
-        time={this.state.currentTrack.time}
+        time={
+          this.state.currentTrack ? this.state.currentTrack.time : undefined
+        }
       />
     );
   }
