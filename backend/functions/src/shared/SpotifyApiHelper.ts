@@ -40,9 +40,9 @@ export function createHeader(
 
 export class SpotifyHelper {
   constructor(
-    private accessToken?: string,
-    private refreshToken?: string,
-    private validUntil?: number
+    public accessToken?: string,
+    public refreshToken?: string,
+    public validUntil?: number
   ) {}
 
   async getSongInfo(songId: string): Promise<SpotifyTrack | void> {
@@ -352,5 +352,12 @@ export class SpotifyHelper {
       return true;
     }
     return false;
+  }
+
+  readdSongAtBottom(playlistId: string | undefined, songId: any) {
+    if (!playlistId) {
+      console.error("playlistID must not be null");
+      return;
+    }
   }
 }
